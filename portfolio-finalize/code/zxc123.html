@@ -1,0 +1,4076 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<!-- ============================================================
+  index.html — Portfolio SPA
+  Ratchaphruek Srisuphachoke
+  Pages: Home | Skills | Hobby | Contact
+  Internal CSS + JS only. Default theme: Light.
+============================================================ -->
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ratchaphruek Srisuphachoke — Portfolio</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+  MASTER CSS VARIABLES — single merged :root.
+  [data-theme="dark"] on <html> overrides every token globally.
+============================================================ */
+:root {
+  /* ── Backgrounds ── */
+  --bg:#f5f4f0; --bg2:#eeecea; --surface:#ffffff; --surface2:#f0efeb;
+  /* ── Text ── */
+  --text:#111111; --text2:#444444; --text3:#888888;
+  /* ── Accent & Highlight (warm gold) ── */
+  --accent:#111111; --highlight:#c8a96e;
+  --highlight-border: rgba(200,169,110,0.52);   /* active card border glow */
+  --highlight-dim:    rgba(200,169,110,0.16);   /* card box-shadow glow */
+  --highlight-pill:   rgba(200,169,110,0.10);   /* badge pill tint */
+  /* ── Structural ── */
+  --border:rgba(0,0,0,0.1); --shadow:rgba(0,0,0,0.08); --shadow-lg:rgba(0,0,0,0.15);
+  --nav-bg:rgba(245,244,240,0.92); --radius:16px; --radius-sm:8px;
+  --transition:all 0.35s cubic-bezier(0.4,0,0.2,1);
+  /* ── Accordion card dimensions (projects + awards) ── */
+  --card-h-base:   210px;   /* collapsed / idle card height */
+  --card-h-active: 460px;   /* expanded card height (~2× base) */
+  /* ── Accordion transition timing ── */
+  --t-expand: 0.68s ease-in-out;   /* slow deliberate expand */
+  --t-quick:  0.22s ease;          /* fast colour / opacity changes */
+}
+[data-theme="dark"] {
+  --bg:#0a0a0a; --bg2:#0d0d0d; --surface:#161616; --surface2:#1e1e1e;
+  --text:#f0f0f0; --text2:#aaaaaa; --text3:#666666;
+  --accent:#00ffcc; --highlight:#00ffcc;
+  --highlight-border: rgba(0,255,204,0.50);
+  --highlight-dim:    rgba(0,255,204,0.16);
+  --highlight-pill:   rgba(0,255,204,0.08);
+  --border:rgba(0,255,204,0.15); --shadow:rgba(0,255,204,0.05); --shadow-lg:rgba(0,255,204,0.12);
+  --nav-bg:rgba(10,10,10,0.95);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden;padding-top:68px;transition:background 0.3s ease,color 0.3s ease;}
+h1,h2,h3,h4{font-family:'Syne',sans-serif;}
+
+/* SPA page show/hide — JS adds .spa-active */
+.spa-page{display:none;}
+.spa-page.spa-active{display:block;}
+
+/* Imported section CSS (boilerplate stripped) */
+/* ===== shared-navbar.html ===== */
+/* ============================================================
+  STYLES FOR: shared-navbar.html
+  "All CSS that drives the navbar — variables, base reset,
+   logo, links, active pill, theme toggle, hamburger,
+   mobile menu dropdown, and dark-mode overrides."
+============================================================ */
+
+/* --- CSS VARIABLES (light + dark) --- */
+
+
+
+/* --- RESET --- */
+
+
+
+
+/* ============================================================
+  NAVBAR OUTER BAR
+  "Fixed bar at top; flex row; blurred glass background."
+============================================================ */
+#navbar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2.5rem;
+  height: 68px;
+  background: var(--nav-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+  transition: var(--transition);
+}
+
+/* NAVBAR: Logo block (left) */
+.nav-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  cursor: pointer;
+}
+.nav-logo img {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  object-fit: cover;
+}
+.logo-text {
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--text);
+  transition: var(--transition);
+}
+
+/* NAVBAR: Centred links */
+.nav-links {
+  display: flex;
+  gap: 0.25rem;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+.nav-link {
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 500;
+  font-size: 0.875rem;
+  color: var(--text2);
+  text-decoration: none;
+  padding: 0.45rem 1rem;
+  border-radius: 8px;
+  transition: var(--transition);
+}
+.nav-link:hover { color: var(--text); background: var(--border); }
+.nav-link.active {
+  color: var(--bg);
+  background: var(--text);
+  font-weight: 600;
+}
+[data-theme="dark"] .nav-link.active { color: #000; background: var(--accent); }
+
+/* NAVBAR: Right side group */
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* NAVBAR: Mobile menu trigger wrapper */
+.mobile-menu-trigger {
+  display: none; /* hidden on desktop; shown at <=768px via @media */
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+}
+.mobile-menu-trigger .hamburger { pointer-events: none; margin: 0; }
+
+/* NAVBAR: "MENU" text label */
+.menu-text-label {
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--text);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transition: color 0.3s ease;
+}
+[data-theme="dark"] .menu-text-label { color: var(--accent); }
+
+/* NAVBAR: Hamburger button — hidden on desktop */
+.hamburger {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  width: 40px; height: 40px;
+  background: none;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  padding: 0;
+  transition: var(--transition);
+}
+.hamburger span {
+  display: block;
+  width: 20px; height: 2px;
+  background: var(--text);
+  border-radius: 2px;
+  transition: var(--transition);
+}
+.hamburger:hover { border-color: var(--highlight); }
+[data-theme="dark"] .hamburger span { background: var(--accent); }
+[data-theme="dark"] .hamburger:hover { border-color: var(--accent); }
+
+/* NAVBAR: Theme toggle */
+.theme-toggle {
+  width: 44px; height: 44px;
+  border: 1.5px solid var(--border);
+  border-radius: 50%;
+  background: var(--surface);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  transition: var(--transition);
+  position: relative;
+  overflow: hidden;
+}
+.theme-toggle:hover { transform: scale(1.05); border-color: var(--accent); }
+.theme-icon  { position: absolute; transition: var(--transition); }
+.light-icon  { opacity: 1;  transform: translateY(0); }
+.dark-icon   { opacity: 0;  transform: translateY(20px); }
+[data-theme="dark"] .light-icon { opacity: 0; transform: translateY(-20px); }
+[data-theme="dark"] .dark-icon  { opacity: 1; transform: translateY(0); }
+
+/* NAVBAR: Contact CTA button */
+.btn-contact {
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 500;
+  font-size: 0.875rem;
+  padding: 0.5rem 1.25rem;
+  background: var(--text);
+  color: var(--bg);
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: var(--transition);
+}
+.btn-contact:hover { opacity: 0.85; transform: translateY(-1px); }
+[data-theme="dark"] .btn-contact { background: var(--accent); color: #000; }
+/* Shake animation on the Contact button */
+.shake-btn { animation: shake 2.5s ease-in-out infinite; }
+@keyframes shake {
+  0%,100% { transform: rotate(0deg); }
+  10%      { transform: rotate(-3deg); }
+  20%      { transform: rotate(3deg); }
+  30%      { transform: rotate(-2deg); }
+  40%      { transform: rotate(2deg); }
+  50%,90%  { transform: rotate(0deg); }
+}
+
+/* ============================================================
+  MOBILE DROPDOWN MENU
+  "Slides down from beneath the navbar on mobile only."
+============================================================ */
+.mobile-menu {
+  display: none;
+  position: fixed;
+  top: 68px; left: 0; right: 0;
+  z-index: 999;
+  flex-direction: column;
+  padding: 0.5rem 1.25rem 1rem;
+  gap: 0.25rem;
+  background: var(--nav-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+  opacity: 0;
+  transform: translateY(-8px);
+  pointer-events: none;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+.mobile-menu.open {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: all;
+}
+.mobile-menu-link {
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 500;
+  font-size: 1rem;
+  color: var(--text2);
+  text-decoration: none;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  transition: var(--transition);
+}
+.mobile-menu-link:hover { color: var(--text); background: var(--border); }
+.mobile-menu-link.active {
+  color: var(--bg);
+  background: var(--text);
+  font-weight: 600;
+}
+[data-theme="dark"] .mobile-menu-link.active { color: #000; background: var(--accent); }
+
+/* ============================================================
+  RESPONSIVE — show hamburger on mobile
+============================================================ */
+@media (max-width: 768px) {
+  #navbar    { padding: 0 1.25rem; }
+  .nav-links { display: none; }
+  .logo-text { display: none; }
+  .hamburger { display: flex; }
+  .mobile-menu { display: flex; }
+}
+/* ===== 001index-mainpage-hero.html ===== */
+/* ============================================================
+  STYLES FOR: index-mainpage-hero.html
+  "Variables, reset, navbar spacer, hero grid, dot-grid bg,
+   badge, name, bio, CTA buttons, photo wrapper, decoration,
+   animate-in keyframe, dark mode, responsive."
+============================================================ */
+
+
+
+
+
+
+
+
+/* ============================================================
+  HERO OUTER GRID
+  "Two-column grid; min-height fills viewport below navbar."
+============================================================ */
+.hero {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-height: calc(100vh - 68px);
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 4rem 3rem;
+  align-items: flex-end;
+  gap: 3rem;
+  position: relative;
+}
+
+/* HERO: Dot-grid decorative background */
+.hero-bg-grid {
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(circle, var(--border) 1px, transparent 1px);
+  background-size: 32px 32px;
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+/* HERO: Left text column */
+.hero-content { z-index: 1; }
+
+/* HERO: TH/EN language badge */
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.4rem 1rem;
+  border: 1.5px solid var(--border);
+  border-radius: 50px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  color: var(--text2);
+  margin-bottom: 1.5rem;
+  background: var(--surface);
+  cursor: pointer;
+}
+
+/* HERO: Large name heading */
+.hero-name {
+  font-size: clamp(2.5rem, 5vw, 4.5rem);
+  font-weight: 800;
+  line-height: 1.05;
+  margin-bottom: 1.5rem;
+  color: var(--text);
+}
+
+/* HERO: Gold/neon accent on surname */
+.name-accent { color: var(--highlight); }
+[data-theme="dark"] .name-accent { color: var(--accent); }
+
+/* HERO: Bio paragraph */
+.hero-bio {
+  font-size: 1.05rem;
+  color: var(--text2);
+  line-height: 1.7;
+  margin-bottom: 2.5rem;
+  max-width: 520px;
+}
+.highlight-text { font-weight: 600; color: var(--text); }
+
+/* HERO: CTA button row */
+.hero-cta { display: flex; gap: 1rem; flex-wrap: wrap; }
+
+/* Primary button */
+.btn-primary {
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 500;
+  padding: 0.8rem 1.75rem;
+  background: var(--text);
+  color: var(--bg);
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  font-size: 0.925rem;
+  transition: var(--transition);
+  white-space: nowrap;
+}
+.btn-primary:hover { opacity: 0.8; transform: translateY(-2px); }
+[data-theme="dark"] .btn-primary { background: var(--accent); color: #000; }
+
+/* Outline button */
+.btn-outline {
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 500;
+  padding: 0.8rem 1.75rem;
+  background: transparent;
+  color: var(--text);
+  border: 1.5px solid var(--text);
+  border-radius: 50px;
+  cursor: pointer;
+  font-size: 0.925rem;
+  transition: var(--transition);
+}
+.btn-outline:hover { background: var(--text); color: var(--bg); transform: translateY(-2px); }
+[data-theme="dark"] .btn-outline { border-color: var(--accent); color: var(--accent); }
+[data-theme="dark"] .btn-outline:hover { background: var(--accent); color: #000; }
+
+/* HERO: Right column — photo wrapper */
+.hero-img-wrap {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  order: -1;
+  margin-top: 0;
+  margin-bottom: 2rem;
+  z-index: 1;
+}
+
+/* HERO: Photo image (slideshow target) */
+.hero-img-placeholder img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+  display: block;
+  transition: opacity 0.5s ease;
+}
+
+/* HERO: Blurred gold accent circle behind photo */
+.hero-decoration {
+  position: absolute;
+  bottom: -20px; right: -20px;
+  width: 200px; height: 200px;
+  background: var(--highlight);
+  border-radius: 50%;
+  opacity: 0.08;
+  z-index: -1;
+}
+[data-theme="dark"] .hero-decoration { background: var(--accent); opacity: 0.05; }
+
+/* ============================================================
+  ANIMATE-IN — stagger entrance animation for hero children
+  "Each child uses CSS animation-delay via --d custom property."
+============================================================ */
+.animate-in {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeUp 0.7s cubic-bezier(0.4,0,0.2,1) forwards;
+  animation-delay: var(--d, 0s);
+}
+@keyframes fadeUp {
+  to { opacity: 1; transform: none; }
+}
+
+/* ============================================================
+  DARK MODE — neon border on photo area
+============================================================ */
+[data-theme="dark"] .hero-img-placeholder {
+  border-color: rgba(0,255,204,0.2);
+}
+
+/* ============================================================
+  RESPONSIVE
+============================================================ */
+@media (max-width: 768px) {
+  .hero {
+    grid-template-columns: 1fr;
+    padding: 2.5rem 1.5rem;
+    text-align: center;
+    min-height: auto;
+  }
+  .hero-img-wrap    { order: -1; }
+  .hero-cta         { justify-content: center; }
+  .hero-bio         { margin-left: auto; margin-right: auto; }
+}
+/* ===== 002index-mainpage-education.html ===== */
+/* ============================================================
+  STYLES FOR: index-mainpage-education.html
+============================================================ */
+
+
+
+
+
+
+/* ============================================================
+  EDUCATION SECTION WRAPPER
+============================================================ */
+.education-section {
+  padding: 5rem 3rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* Section label (small uppercase tag above title) */
+.section-label {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--highlight);
+  margin-bottom: 0.6rem;
+}
+
+/* Main heading */
+.section-title {
+  font-size: clamp(1.75rem, 3vw, 2.5rem);
+  font-weight: 800;
+  color: var(--text);
+  line-height: 1.15;
+  margin-bottom: 2rem;
+}
+
+/* Two-column layout */
+.edu-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+  align-items: center;
+}
+
+/* Degree sub-heading */
+.edu-degree {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 1.5rem;
+  line-height: 1.3;
+}
+.gsse-tag { color: var(--highlight); }
+[data-theme="dark"] .gsse-tag { color: #00ffcc; }
+
+/* Feature bullet list */
+.edu-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 2rem;
+}
+.edu-list li {
+  padding-left: 1.25rem;
+  position: relative;
+  color: var(--text2);
+  line-height: 1.6;
+}
+.edu-list li::before {
+  content: '→';
+  position: absolute;
+  left: 0;
+  color: var(--highlight);
+  font-weight: 600;
+}
+[data-theme="dark"] .edu-list li::before { color: #00ffcc; }
+
+/* Button + GPAX badge row */
+.edu-actions { display: flex; align-items: center; gap: 1rem; }
+
+.btn-primary {
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 500;
+  padding: 0.55rem 1.2rem;
+  background: var(--text);
+  color: var(--bg);
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: var(--transition);
+}
+.btn-primary:hover { opacity: 0.8; transform: translateY(-2px); }
+[data-theme="dark"] .btn-primary { background: #00ffcc; color: #000; }
+
+.gpax-badge {
+  padding: 0.5rem 1.25rem;
+  border: 1.5px solid var(--text);
+  border-radius: 50px;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+[data-theme="dark"] .gpax-badge { border-color: #00ffcc; color: #00ffcc; }
+
+/* University logo placeholder (right column) */
+.edu-logo-placeholder {
+  width: 100%;
+  aspect-ratio: 1;
+  max-width: 380px;
+  border-radius: var(--radius);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 2rem;
+  text-align: center;
+}
+.placeholder-label {
+  font-size: 0.8rem;
+  color: var(--text3);
+  text-align: center;
+}
+
+/* Scroll-reveal base state */
+.scroll-reveal {
+  opacity: 0;
+  transform: translateY(32px);
+  transition: opacity 0.65s ease, transform 0.65s ease;
+}
+.scroll-reveal.revealed { opacity: 1; transform: none; }
+
+/* ============================================================
+  RESPONSIVE
+============================================================ */
+@media (max-width: 768px) {
+  .education-section { padding: 3rem 1.5rem; }
+  .edu-grid { grid-template-columns: 1fr; }
+}
+/* ===== 004index-mainpage-projects.html ===== */
+/* ============================================================
+  [Define static color definitions and font stacks]
+  All design tokens as CSS custom properties — edit here to
+  retheme the entire component from one place.
+============================================================ */
+
+
+
+
+/* ============================================================
+  [Reset and base document styles]
+============================================================ */
+
+
+
+
+/* ============================================================
+  [Section wrapper — dark rounded card holding the whole section]
+============================================================ */
+.projects-section {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 5rem 3rem;
+  background: var(--bg2);
+  transition: background 0.4s ease;
+}
+
+/* [Small uppercase accent label] */
+.section-label {
+  display: block;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--highlight);
+  margin-bottom: 0.55rem;
+  opacity: 0.75;
+}
+
+/* [Main Syne display heading] */
+.section-title {
+  font-family: 'Syne', system-ui, sans-serif;
+  font-size: clamp(1.6rem, 3vw, 2.4rem);
+  font-weight: 800;
+  color: var(--text);
+  line-height: 1.15;
+  margin-bottom: 2.5rem;
+}
+
+/* ============================================================
+  [Accordion flex row — holds all four project cards]
+  align-items: flex-end makes cards grow upward from a
+  shared bottom baseline.
+============================================================ */
+.projects-accordion {
+  display: flex;
+  gap: 12px;
+  align-items: flex-end;
+  width: 100%;
+}
+
+/* ============================================================
+  [Individual card — idle / collapsed state]
+  Narrow column, base height.
+============================================================ */
+.project-card {
+  /* [Idle cards share equal width] */
+  flex: 1 1 0;
+  min-width: 0;
+  min-height: var(--card-h-base);
+
+  /* [Visual styles linked to theme] */
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+
+  position: relative;
+  cursor: pointer;
+  overflow: hidden;
+
+  /* [Slow accordion transition on flex, height, border, shadow] */
+  transition:
+    flex          var(--t-expand),
+    min-height    var(--t-expand),
+    border-color  var(--t-quick),
+    box-shadow    var(--t-quick),
+    background    var(--t-quick);
+}
+
+/* ============================================================
+  [Active card — expanded state]
+  Wider via flex, taller via min-height, glowing border.
+============================================================ */
+.project-card.active {
+  /* [Takes ~3.5× more space than idle cards] */
+  flex: 3.5 1 0;
+  min-height: var(--card-h-active);
+
+  background: var(--surface);
+  border-color: var(--highlight);
+  box-shadow:
+    0 0 0 1px var(--highlight),
+    0 8px 36px var(--shadow-lg);
+}
+
+/* ============================================================
+  [Collapsed content layer]
+  Shows on idle cards: number top-left + horizontal title.
+  Fades out when card becomes active.
+============================================================ */
+.card-collapsed {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 1.2rem 0.9rem;
+  pointer-events: none;
+  opacity: 1;
+  transition: opacity 0.2s ease 0.05s;
+}
+.project-card.active .card-collapsed {
+  opacity: 0;
+}
+
+/* [Number top-left on idle cards] */
+.c-num-idle {
+  font-family: 'Syne', system-ui, sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text3);
+  margin-bottom: auto;
+  letter-spacing: 0.02em;
+}
+
+/* [Horizontal title on idle cards — wraps correctly] */
+.c-title-vertical {
+  font-family: 'DM Sans', system-ui, sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text2);
+  width: 100%;
+  text-align: left;
+  line-height: 1.3;
+  letter-spacing: 0.02em;
+  margin-top: auto;
+  white-space: normal;
+  word-wrap: break-word;
+}
+
+/* ============================================================
+  [Expanded content layer]
+  Two regions stacked top → bottom:
+    .proj-thumb  — thumbnail placeholder (upper, new space)
+    .proj-text   — number label + title + description (lower)
+  Fades in after card finishes expanding (delayed opacity).
+============================================================ */
+.card-expanded {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 1.2rem 1.3rem 3rem; /* bottom padding clears link icon */
+  gap: 0.9rem;
+  opacity: 0;
+  pointer-events: none;
+  /* [Delay fade-in so it appears after the expansion animation] */
+  transition: opacity 0.28s ease 0.38s;
+}
+.project-card.active .card-expanded {
+  opacity: 1;
+  pointer-events: all;
+}
+
+/* ============================================================
+  [Thumbnail placeholder — upper half of expanded card]
+  Label: "Project Thumbnail Placeholder"
+============================================================ */
+.proj-thumb {
+  /* [Fills the new vertical space revealed by expansion] */
+  flex: 1 1 0;
+  min-height: 0;
+  background: var(--bg2);
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-sm);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  overflow: hidden;
+}
+
+/* [Inline landscape SVG icon] */
+.thumb-svg {
+  width: 50px;
+  height: 38px;
+  opacity: 0.5;
+}
+
+/* ["Project Thumbnail Placeholder" label text] */
+.thumb-label {
+  font-family: 'DM Sans', system-ui, sans-serif;
+  font-size: 0.68rem;
+  font-weight: 400;
+  color: var(--text3);
+  letter-spacing: 0.07em;
+  text-align: center;
+  padding: 0 0.5rem;
+}
+
+/* ============================================================
+  [Text block — lower half of expanded card]
+  Contains Syne number tag, DM Sans title, DM Sans description.
+============================================================ */
+.proj-text {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+/* [Small Syne number above title — accent colour] */
+.c-num-label {
+  font-family: 'Syne', system-ui, sans-serif;
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: var(--highlight);
+  letter-spacing: 0.06em;
+}
+
+/* [Horizontal project title — DM Sans bold] */
+.c-title-h {
+  font-family: 'DM Sans', system-ui, sans-serif;
+  font-size: clamp(0.88rem, 1.4vw, 1.02rem);
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.3;
+}
+
+/* [Description body text — DM Sans light, muted] */
+.c-desc {
+  font-family: 'DM Sans', system-ui, sans-serif;
+  font-size: 0.78rem;
+  font-weight: 300;
+  color: var(--text2);
+  line-height: 1.55;
+}
+
+/* ============================================================
+  [Number shown top-left corner of the active card]
+  Hidden on idle cards, fades in when active.
+============================================================ */
+.c-num-corner {
+  position: absolute;
+  top: 1.05rem;
+  left: 1.25rem;
+  font-family: 'Syne', system-ui, sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--highlight);
+  letter-spacing: 0.04em;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.22s ease 0.32s;
+}
+.project-card.active .c-num-corner {
+  opacity: 1;
+}
+
+/* ============================================================
+  [External link icon — bottom-right of expanded card]
+  Clicking the icon (or anywhere on the active card) opens
+  the project URL in a new browser tab.
+============================================================ */
+.card-link {
+  position: absolute;
+  bottom: 1rem;
+  right: 1rem;
+  width: 28px;
+  height: 28px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--highlight);
+  text-decoration: none;
+  z-index: 10;
+  transition: background var(--t-quick), border-color var(--t-quick);
+}
+.card-link:hover {
+  background: var(--border);
+  border-color: var(--highlight);
+}
+.card-link svg {
+  width: 12px;
+  height: 12px;
+  stroke: var(--highlight);
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* ============================================================
+  [Scroll-reveal — section fades up on first viewport entry]
+============================================================ */
+.scroll-reveal {
+  opacity: 0;
+  transform: translateY(26px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+.scroll-reveal.revealed {
+  opacity: 1;
+  transform: none;
+}
+
+/* ============================================================
+  [Responsive breakpoints]
+  ≤900px → 2×2 grid wrap
+  ≤600px → single column stack
+============================================================ */
+@media (max-width: 900px) {
+  .projects-accordion { flex-wrap: wrap; align-items: stretch; }
+  .project-card       { flex: 1 1 calc(50% - 6px); min-height: var(--card-h-base); }
+  .project-card.active{ flex: 1 1 calc(50% - 6px); min-height: var(--card-h-active); }
+}
+@media (max-width: 600px) {
+  .projects-section   { padding: 2.5rem 1.25rem; }
+  .projects-accordion { flex-direction: column; gap: 10px; }
+  .project-card,
+  .project-card.active{ flex: none; width: 100%; }
+  .project-card       { min-height: var(--card-h-base); }
+  .project-card.active{ min-height: var(--card-h-active); }
+  .c-title-vertical   { font-size: 0.88rem; }
+}
+/* ===== 003index-mainpage-awards.html ===== */
+/* ============================================================
+  [Define static color tokens — original warm light-mode palette.
+   No dark-mode wiring. Edit variables here to retheme globally.]
+============================================================ */
+
+
+/* ============================================================
+  [Reset and base document styles]
+============================================================ */
+
+
+
+
+
+/* ============================================================
+  [Section wrapper — max-width container with generous padding]
+============================================================ */
+.awards-section {
+  padding: 5rem 3rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* [Small uppercase accent label above the section heading] */
+.section-label {
+  display: block;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--highlight);
+  margin-bottom: 0.6rem;
+}
+
+/* [Main Syne display heading] */
+.section-title {
+  font-family: 'Syne', system-ui, sans-serif;
+  font-size: clamp(1.75rem, 3vw, 2.5rem);
+  font-weight: 800;
+  color: var(--text);
+  line-height: 1.15;
+  margin-bottom: 2.5rem;
+}
+
+/* ============================================================
+  [Accordion flex row — holds the three award cards.
+   align-items: flex-end anchors all cards to the same bottom
+   baseline so height growth goes upward — matches Projects.]
+============================================================ */
+.awards-accordion {
+  display: flex;
+  gap: 14px;
+  align-items: flex-end;
+  width: 100%;
+}
+
+/* ============================================================
+  [Individual award card — idle / collapsed state]
+  Equal-width columns, base height, minimal content visible.
+============================================================ */
+.award-card {
+  /* [Idle: all cards share equal flex-grow] */
+  flex: 1 1 0;
+  min-width: 0;
+  min-height: var(--card-h-base);
+
+
+  /* [Visual: white surface, barely-visible border] */
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+
+  position: relative;
+  cursor: pointer;
+  overflow: hidden;
+
+  /* [All dimension + decoration changes animate with slow expand timing] */
+  transition:
+    flex            var(--t-expand),
+    min-height      var(--t-expand),
+    border-color    var(--t-quick),
+    box-shadow      var(--t-quick),
+    background      var(--t-quick);
+}
+
+/* ============================================================
+  [Active card — expanded state, set by .active class via JS]
+  Takes ~3× more horizontal space; doubles in height;
+  gains the glowing gold border frame.
+============================================================ */
+.award-card.active {
+  flex: 3 1 0;
+  min-height: var(--card-h-active);
+  border-color: var(--highlight-border);
+  box-shadow:
+    0 0 0 1px var(--highlight-border),
+    0 0 28px var(--highlight-dim),
+    0 8px 32px var(--shadow-lg);
+}
+
+/* ============================================================
+  [Collapsed content layer — shown on IDLE cards]
+  Contains: emoji icon top-left, year tag, rotated vertical title.
+  Fades out smoothly when its card becomes active.
+============================================================ */
+.card-collapsed {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start; /* Changed from center to flex-start */  padding: 1.3rem 0.8rem;
+  pointer-events: none;
+  opacity: 1;
+  transition: opacity 0.2s ease 0.04s; /* [Quick fade-out on activation] */
+}
+.award-card.active .card-collapsed {
+  opacity: 0;
+}
+
+/* [Award emoji icon — top-left on idle card] */
+.c-icon-idle {
+  font-size: 1.75rem;
+  align-self: flex-start;
+  margin-bottom: auto;
+}
+
+/* [Small year tag — above the vertical title on idle card] */
+.c-year-idle {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--highlight);
+  align-self: flex-start;
+  margin-bottom: 0.3rem;
+}
+
+/* [Horizontal title on idle card — wraps correctly] */
+.c-title-vertical {
+  font-family: 'DM Sans', system-ui, sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text2);
+  width: 100%;
+  text-align: left;
+  line-height: 1.3;
+  letter-spacing: 0.02em;
+  margin-top: auto;
+  white-space: normal;
+  word-wrap: break-word;
+}
+
+/* ============================================================
+  [Expanded content layer — shown on ACTIVE card only]
+  Two stacked regions:
+    .award-thumb → thumbnail image (upper / newly-revealed space)
+    .award-body  → year + badge pill + title + description (lower)
+  Opacity 0 by default; fades in after expand animation ends.
+============================================================ */
+.card-expanded {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 1.25rem 1.4rem 1.4rem;
+  gap: 1rem;
+  opacity: 0;
+  pointer-events: none;
+  /* [Delayed fade-in so content appears after expansion finishes] */
+  transition: opacity 0.28s ease 0.36s;
+}
+.award-card.active .card-expanded {
+  opacity: 1;
+  pointer-events: all;
+}
+
+/* ============================================================
+  [Upper half — thumbnail / award photo container]
+  Fills the new vertical space created by height expansion.
+  The <img> inside uses object-fit: cover for clean cropping.
+============================================================ */
+.award-thumb {
+  flex: 1 1 0;
+  min-height: 0;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  background: var(--bg2); /* [Fallback bg while image loads] */
+}
+
+/* ============================================================
+  [Lower half — text content: year, badge, title, description]
+============================================================ */
+.award-
+
+/* [Year tag — small gold caps] */
+.award-tag {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--highlight);
+}
+
+/* [Badge pill — e.g. "1st Runner Up" — styled with highlight colour.
+   Only rendered on cards that warrant one; omit the element otherwise.] */
+.award-badge-pill {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  padding: 0.25rem 0.85rem;
+  background: var(--highlight-pill);
+  border: 1px solid var(--highlight);
+  border-radius: 50px;
+  font-family: 'Syne', sans-serif;
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--highlight);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+}
+
+/* [Award title — Syne bold, primary text colour] */
+.award-title {
+  font-family: 'Syne', system-ui, sans-serif;
+  font-size: clamp(0.95rem, 1.4vw, 1.05rem);
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.3;
+}
+
+/* [Description — DM Sans regular, secondary text colour] */
+.award-desc {
+  font-family: 'DM Sans', system-ui, sans-serif;
+  font-size: 0.82rem;
+  font-weight: 400;
+  color: var(--text2);
+  line-height: 1.6;
+}
+
+/* ============================================================
+  [Scroll-reveal — section fades up on first viewport entry]
+============================================================ */
+.scroll-reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+.scroll-reveal.revealed {
+  opacity: 1;
+  transform: none;
+}
+
+/* ============================================================
+  [Responsive — <= 900px]
+  Flex wraps to vertical stack. All cards full-width.
+  Active card uses expanded height; idle cards use base height.
+  Vertical titles revert to horizontal for readability.
+============================================================ */
+@media (max-width: 900px) {
+  .awards-section   { padding: 3rem 1.5rem; }
+  .awards-accordion { flex-direction: column; gap: 10px; }
+
+  .award-card,
+  .award-card.active {
+    flex: none;
+    width: 100%;
+  }
+  .award-card        { min-height: var(--card-h-base); }
+  .award-card.active { min-height: var(--card-h-active); }
+
+  /* [Title font size adjustment on mobile] */
+  .c-title-vertical {
+  font-size: 0.88rem;
+  }
+}
+/* ===== 005index-mainpage-intern.html ===== */
+/* ============================================================
+  STYLES FOR: index-mainpage-intern.html
+============================================================ */
+
+
+
+
+
+
+.section-label{font-size:0.75rem;font-weight:500;letter-spacing:0.15em;text-transform:uppercase;color:var(--highlight);margin-bottom:0.6rem;max-width:1400px;margin-left:auto;margin-right:auto;}
+.section-title{font-size:clamp(1.75rem,3vw,2.5rem);font-weight:800;color:var(--text);line-height:1.15;margin-bottom:2rem;max-width:1400px;margin-left:auto;margin-right:auto;}
+.placeholder-label{font-size:0.8rem;color:var(--text3);text-align:center;line-height:1.5;}
+
+/* ============================================================
+  INTERN SECTION WRAPPER
+============================================================ */
+.intern-section {
+  padding: 5rem 3rem;
+  background: var(--bg2);
+  transition: background 0.4s ease;
+}
+
+/* 2-column card grid */
+.intern-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* Individual card */
+.intern-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 2rem;
+  transition: var(--transition);
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+}
+.intern-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 16px 40px var(--shadow-lg);
+}
+[data-theme="dark"] .intern-card:hover {
+  box-shadow: 0 0 0 1px #00ffcc, 0 20px 40px rgba(0,255,204,0.1);
+}
+
+/* Company logo slot */
+.intern-logo-placeholder {
+  width: 156px; /* Increased by 30% from 120px */
+  height: 78px; /* Increased by 30% from 60px */
+  border: none; /* Removed the dashed border */
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: flex-start; /* Aligns the logo neatly to the left */
+  margin-bottom: 0.3rem;
+}
+
+/* Header row */
+.intern-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+  gap: 1rem;
+  font-family: "DM Sans";
+}
+
+.intern-header h4 { 
+  font-family: 'Syne', sans-serif; 
+  font-size: 1.2rem; /* Increased size for the company name */
+  font-weight: 700; 
+  line-height: 1.3; 
+}
+
+/* Role tag */
+.intern-role {
+  font-family: 'Syne', system-ui, sans-serif; /* Applies the Syne theme font */
+  font-size: 1.05rem; /* Increased size for the role */
+  color: var(--highlight);
+  font-weight: 600; /* Made slightly bolder to match the new font */
+  display: block;
+  margin-top: 0.3rem;
+  letter-spacing: 0.02em;
+}
+
+[data-theme="dark"] .intern-role { color: #00ffcc; }
+
+/* Period pill */
+.intern-period {
+  font-size: 0.78rem;
+  color: var(--text3);
+  white-space: nowrap;
+  border: 1px solid var(--border);
+  padding: 0.3rem 0.7rem;
+  border-radius: 50px;
+}
+
+/* Bullet list */
+.intern-info ul { list-style:none; display:flex; flex-direction:column; gap:0.6rem; }
+.intern-info ul li {
+  font-size: 0.875rem;
+  color: var(--text2);
+  padding-left: 1.2rem;
+  position: relative;
+  line-height: 1.5;
+}
+.intern-info ul li::before {
+  content: '·';
+  position: absolute;
+  left: 0;
+  color: var(--highlight);
+  font-size: 1.2rem;
+  line-height: 1.2;
+}
+[data-theme="dark"] .intern-info ul li::before { color: #00ffcc; }
+
+/* Company profile overlay */
+.intern-hover-overlay {
+  position: absolute;
+  inset: 0;
+  background: var(--text);
+  color: var(--bg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  opacity: 0;
+  transform: scale(1.03);
+  transition: var(--transition);
+  border-radius: var(--radius);
+  padding: 2rem;
+  text-align: center;
+}
+.intern-card:hover .intern-hover-overlay { opacity: 1; transform: scale(1); }
+[data-theme="dark"] .intern-hover-overlay {
+  background: rgba(0,255,204,0.1);
+  border: 1px solid #00ffcc;
+  color: #00ffcc;
+}
+.intern-hover-overlay p { font-size: 0.85rem; opacity: 0.8; }
+
+/* Scroll-reveal */
+.scroll-reveal{opacity:0;transform:translateY(32px);transition:opacity 0.65s ease,transform 0.65s ease;}
+.scroll-reveal.revealed{opacity:1;transform:none;}
+
+/* ============================================================
+  RESPONSIVE
+============================================================ */
+@media (max-width: 768px) {
+  .intern-section { padding: 3rem 1.5rem; }
+  .intern-grid { grid-template-columns: 1fr; }
+}
+/* ===== 006_index-mainpage-extracurricular.html ===== */
+/* ============================================================
+  STYLES FOR: index-mainpage-extracurricular.html
+============================================================ */
+
+
+
+
+
+
+.section-label{font-size:0.75rem;font-weight:500;letter-spacing:0.15em;text-transform:uppercase;color:var(--highlight);margin-bottom:0.6rem;}
+.section-title{font-size:clamp(1.75rem,3vw,2.5rem);font-weight:800;color:var(--text);line-height:1.15;margin-bottom:2rem;}
+.placeholder-label{font-size:0.8rem;color:var(--text3);text-align:center;line-height:1.5;}
+
+/* ============================================================
+  EXTRACURRICULAR SECTION WRAPPER
+============================================================ */
+.extra-section { padding: 5rem 3rem; max-width: 1400px; margin: 0 auto; }
+
+/* Two-column layout (clubs | timeline) */
+.extra-layout { display: grid; grid-template-columns: 280px 1fr; gap: 4rem; }
+
+/* --- Column Headers (Updated) --- */
+.clubs-wrap h3, .timeline-wrap h3 {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 1.15rem; /* Bigger font size */
+  font-weight: 700; /* Bold */
+  color: var(--highlight); /* Uses your #c8a96e gold color */
+  text-transform: uppercase; 
+  letter-spacing: 0.15em; 
+  margin-top: 0; /* Ensures tops are perfectly aligned */
+  margin-bottom: 2.5rem; /* Pushes content down equally */
+  line-height: 1.2;
+}
+
+.clubs-grid { display: flex; flex-direction: column; gap: 1.25rem; }
+
+/* Individual club tile - PERFECT CIRCLES */
+.club-circle {
+  width: 100px; height: 100px; 
+  flex-shrink: 0; 
+  background: var(--text); color: var(--bg);
+  border-radius: 50%; 
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1rem;
+  cursor: pointer; position: relative; overflow: hidden;
+}
+[data-theme="dark"] .club-circle {
+  background: var(--surface2); color: #00ffcc;
+  border: 1px solid #00ffcc;
+}
+
+/* Hover overlay inside each club tile */
+.club-hover {
+  position: absolute; inset: 0;
+  background: rgba(0,0,0,0.85); 
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 0.4rem; padding: 0.5rem;
+  transform: translateY(100%); 
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); text-align: center;
+  border-radius: 50%; 
+}
+[data-theme="dark"] .club-hover { background: rgba(0, 255, 204, 0.9); }
+
+/* Swipe up on hover */
+.club-circle:hover .club-hover { transform: translateY(0); }
+
+/* Adjusted hover text sizing */
+.club-hover .placeholder-label { color: white; font-size: 0.6rem; line-height: 1.2; margin-bottom: 2px; }
+.club-hover p { color: white; font-size: 0.55rem; font-weight: 500; line-height: 1.2; }
+
+/* --- TIMELINE column --- */
+.timeline-wrap { display: flex; flex-direction: column; gap: 0; }
+.timeline-item {
+  display: grid; grid-template-columns: 24px 1fr;
+  gap: 1.25rem; padding-bottom: 2rem; position: relative;
+}
+.timeline-item:not(:last-child) .timeline-dot::after {
+  content: ''; position: absolute; top: 24px; left: 12px;
+  width: 1px; height: calc(100% - 8px);
+  background: var(--border); transform: translateX(-50%);
+}
+.timeline-dot {
+  width: 12px; height: 12px; border-radius: 50%;
+  margin-top: 5px; position: relative; flex-shrink: 0;
+}
+.timeline-dot.research  { background: #7c6ff7; }
+.timeline-dot.youth     { background: #4ecdc4; }
+.timeline-dot.speaking  { background: var(--highlight); }
+.timeline-dot.volunteer { background: #ff6b6b; }
+[data-theme="dark"] .timeline-dot.speaking { background: #00ffcc; }
+
+.timeline-meta { display:flex; justify-content:space-between; align-items:center; margin-bottom:0.35rem; }
+.tl-category { font-size:0.72rem; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; color:var(--text3); }
+.tl-date     { font-size:0.78rem; color:var(--text3); }
+.timeline-content h4 { font-size:0.95rem; font-weight:700; color:var(--text); margin-bottom:0.2rem; }
+.timeline-content p  { font-size:0.82rem; color:var(--text2); }
+
+/* ============================================================
+  FLOATING TOOLTIP SYSTEM
+============================================================ */
+
+/* [Tooltip outer box] */
+.tt-box {
+  position: fixed;           
+  z-index: 9999;             
+  width: 300px;              
+  pointer-events: none;      
+
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.18), 0 2px 8px rgba(0,0,0,0.10);
+
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 0.22s ease, transform 0.22s ease;
+  overflow: hidden;          
+}
+
+/* [Active state] */
+.tt-box.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* [Dark mode styling] */
+[data-theme="dark"] .tt-box {
+  background: var(--surface);
+  border-color: rgba(0,255,204,0.25);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5), 0 0 0 1px rgba(0,255,204,0.12);
+}
+
+/* [Top row: image/video strip] */
+.tt-img-wrap {
+  width: 100%;
+  height: 130px;             
+  overflow: hidden;
+  background: var(--surface2); 
+  flex-shrink: 0;
+}
+.tt-img-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}
+.tt-img-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;           
+  background: var(--surface2);
+}
+
+/* [Bottom row: text content] */
+.tt-
+
+.tt-category {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--highlight);
+  line-height: 1.3;
+}
+
+.tt-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.3;
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
+.tt-desc {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 400;
+  color: var(--text2);
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.tt-date {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.72rem;
+  color: var(--text3);
+  margin-top: 0.1rem;
+}
+
+/* Hover effects */
+.timeline-item { cursor: pointer; }
+.timeline-item:hover .timeline-content h4 {
+  color: var(--highlight);
+  transition: color 0.18s ease;
+}
+
+.scroll-reveal{opacity:0;transform:translateY(32px);transition:opacity 0.65s ease,transform 0.65s ease;}
+.scroll-reveal.revealed{opacity:1;transform:none;}
+
+/* ============================================================
+  RESPONSIVE
+============================================================ */
+@media (max-width: 1024px) {
+  .extra-layout { grid-template-columns: 1fr; }
+  .clubs-grid   { flex-direction: row; gap: 1rem; }
+  .club-circle  { width: 80px; height: 80px; } 
+}
+
+@media (max-width: 768px) {
+  .extra-section { padding: 3rem 1.5rem; }
+  .tt-box { width: calc(100vw - 2rem); max-width: 300px; }
+}
+/* ===== 001_index-skillpage-hero.html ===== */
+/* ============================================================
+  STYLES FOR: index-skillpage-hero.html
+============================================================ */
+
+
+
+
+
+
+/* ============================================================
+  SKILLS PAGE HERO
+  "Centred text block — label, title, subtitle."
+============================================================ */
+.page-hero {
+  padding: 5rem 3rem 3rem;
+  max-width: 1400px;
+  margin: 0 auto;
+  text-align: center;
+}
+.section-label {
+  font-size: 0.75rem; font-weight: 500; letter-spacing: 0.15em;
+  text-transform: uppercase; color: var(--highlight); margin-bottom: 0.6rem;
+}
+.page-title {
+  font-size: clamp(2rem, 4vw, 3.5rem); font-weight: 800;
+  line-height: 1.1; margin-bottom: 1rem; color: var(--text);
+}
+.name-accent { color: var(--highlight); }
+[data-theme="dark"] .name-accent { color: #00ffcc; }
+.page-subtitle {
+  font-size: 1rem; color: var(--text2);
+  max-width: 500px; margin: 0 auto; line-height: 1.7;
+}
+.scroll-reveal{opacity:0;transform:translateY(32px);transition:opacity 0.65s ease,transform 0.65s ease;}
+.scroll-reveal.revealed{opacity:1;transform:none;}
+@media (max-width: 768px) {
+  .page-hero { padding: 3rem 1.5rem 2rem; }
+}
+/* ===== 002_index-skillpage-process.html ===== */
+/* ============================================================
+  STYLES FOR: index-skillpage-process.html
+  [Original CSS variables — zero color changes]
+============================================================ */
+
+
+ 
+/* ============================================================
+  [Reset and base — unchanged from original]
+============================================================ */
+
+
+
+ 
+/* ============================================================
+  PROCESS SECTION WRAPPER
+  [padding and background unchanged from original]
+============================================================ */
+.process-section {
+  padding: 4rem 3rem;
+  background: var(--bg2);
+  transition: background 0.4s ease;
+}
+ 
+/* ============================================================
+  CHEVRON ROW
+  "align-items: stretch ensures all cards share the same height
+   so clip-path points land at the true vertical midpoint.
+   gap: 0 with negative margin-left creates the overlap
+   so notch-left edges nest over point-right edges cleanly."
+============================================================ */
+.process-flow {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  max-width: 1400px;
+  margin: 0 auto;
+  overflow-x: auto;
+  padding-bottom: 1rem;
+}
+ 
+/* ============================================================
+  INDIVIDUAL STEP CARD — base (collapsed / idle) state
+ 
+  CLIP-PATH ANATOMY (percentage-based):
+  ─────────────────────────────────────────────────────────────
+  Point protrusion  : 6% of card width extends as the right tip
+  Notch depth       : 6% indent on the left edge of cards 2–4
+  Both values must match for a perfect flush nest.
+ 
+  Card 1  (flat-left, pointed-right):
+    polygon(0% 0%, 94% 0%, 100% 50%, 94% 100%, 0% 100%)
+ 
+  Cards 2-3  (notch-left, pointed-right):
+    polygon(0% 0%, 94% 0%, 100% 50%, 94% 100%, 0% 100%, 6% 50%)
+ 
+  Card 4  (notch-left, flat-right):
+    polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%, 6% 50%)
+ 
+  Overlap: margin-left: -2.5% so the notch sits exactly over
+  the previous card's point (no gap, no double-border).
+  ─────────────────────────────────────────────────────────────
+============================================================ */
+.process-step {
+  flex: 1 1 0;
+  min-width: 200px;
+  min-height: 260px;
+ 
+  position: relative;
+  margin-left: -2.5%;   /* [Overlap — cards nest into each other] */
+ 
+  /* [Stagger reveal — starts invisible, JS fades in] */
+  opacity: 0;
+  transform: translateY(20px);
+ 
+  /* [Transition for reveal; hover filter / transform added below] */
+  transition: opacity 0.5s ease, transform 0.5s ease, filter 0.35s ease;
+ 
+  cursor: default;
+  z-index: 1;
+}
+ 
+/* ── Card 1: flat left, pointed right ── */
+.process-step:first-child {
+  margin-left: 0;
+  z-index: 1;
+  clip-path: polygon(0% 0%, 94% 0%, 100% 50%, 94% 100%, 0% 100%);
+}
+ 
+/* ── Cards 2-3: notch left, pointed right ── */
+.process-step:nth-child(2) {
+  z-index: 2;
+  clip-path: polygon(0% 0%, 94% 0%, 100% 50%, 94% 100%, 0% 100%, 6% 50%);
+}
+.process-step:nth-child(3) {
+  z-index: 3;
+  clip-path: polygon(0% 0%, 94% 0%, 100% 50%, 94% 100%, 0% 100%, 6% 50%);
+}
+ 
+/* ── Card 4: notch left, flat right ── */
+.process-step:last-child {
+  z-index: 4;
+  clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%, 6% 50%);
+}
+ 
+/* ============================================================
+  BACKGROUND IMAGE LAYER
+  "Sits behind content at z-index 0. opacity: 0 by default.
+   JS reads data-bg-img on the parent card and injects the
+   path as background-image. On hover: fades to visible."
+============================================================ */
+.step-bg {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0;
+  transition: opacity 0.45s ease;
+  z-index: 0;
+}
+ 
+/* ============================================================
+  OVERLAY LAYER
+  "Sits above bg image, below text (z-index 1). Default state:
+   solid surface colour so card looks exactly like original.
+   On hover: becomes a semi-transparent dark scrim so the bg
+   image shows through and text stays readable."
+============================================================ */
+.step-overlay {
+  position: absolute;
+  inset: 0;
+  background: var(--surface);
+  opacity: 1;
+  transition: background 0.45s ease, opacity 0.45s ease;
+  z-index: 1;
+}
+[data-theme="dark"] .step-overlay {
+  background: var(--surface);
+}
+ 
+/* ============================================================
+  HOVER STATES
+  "Reveal bg image + darken overlay + lift card."
+============================================================ */
+.process-step:hover {
+  transform: translateY(-5px);
+  filter: drop-shadow(0 12px 28px var(--shadow-lg));
+  z-index: 10 !important;  /* [Float above all neighbours] */
+}
+.process-step:hover .step-bg {
+  opacity: 1;              /* [Bg image becomes visible] */
+}
+.process-step:hover .step-overlay {
+  background: rgba(17, 17, 17, 0.70);  /* [Dark scrim over image] */
+}
+[data-theme="dark"] .process-step:hover .step-overlay {
+  background: rgba(0, 0, 0, 0.76);
+}
+ 
+/* ============================================================
+  CONTENT LAYER
+  "Sits above both bg and overlay (z-index 2). Padding-left is
+   larger on cards 2–4 to clear the V-notch indentation so
+   text never gets clipped inside the notch."
+============================================================ */
+.step-content {
+  position: relative;
+  z-index: 2;
+  padding: 2rem 2.8rem 2rem 1.75rem;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+ 
+/* [Cards 2–4: extra left padding to clear the notch] */
+.process-step:not(:first-child) .step-content {
+  padding-left: 2.6rem;
+}
+ 
+/* [Card 4 (last): standard right padding — flat edge] */
+.process-step:last-child .step-content {
+  padding-right: 1.75rem;
+}
+ 
+/* ============================================================
+  STEP NUMBER
+  "Large faded number — top-right aligned within content.
+   Turns highlight colour on hover."
+============================================================ */
+.step-num {
+  font-family: 'Syne', sans-serif;
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: var(--border);
+  line-height: 1;
+  margin-bottom: 0.85rem;
+  align-self: flex-end;
+  transition: color 0.3s ease;
+}
+.process-step:hover .step-num {
+  color: var(--highlight);
+}
+ 
+/* ============================================================
+  HEADING
+  [size and weight unchanged; word-break added for wrapping]
+============================================================ */
+.process-step h4 {
+  font-family: 'Syne', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  margin-bottom: 0.3rem;
+  color: var(--text);
+  line-height: 1.35;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  transition: color 0.3s ease;
+}
+.process-step:hover h4 {
+  color: #ffffff;           /* [High contrast over dark scrim] */
+}
+ 
+/* ============================================================
+  PHASE SUB-LABEL
+  [unchanged — highlight colour + uppercase]
+============================================================ */
+.step-sub {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.75rem;
+  color: var(--highlight);
+  font-weight: 500;
+  margin-bottom: 1.25rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  transition: color 0.3s ease;
+}
+[data-theme="dark"] .step-sub { color: var(--highlight); }
+ 
+/* ============================================================
+  BULLET LIST
+  "No circle marker. Short em-dash used instead.
+   text2 colour by default; lightens on hover for contrast."
+============================================================ */
+.process-step ul {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: auto;  /* [Pushes list to bottom of card] */
+}
+.process-step ul li {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.82rem;
+  color: var(--text2);
+  padding-left: 1rem;
+  position: relative;
+  line-height: 1.4;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  transition: color 0.3s ease;
+}
+ 
+/* [Dash marker — replaces circle bullet from original] */
+.process-step ul li::before {
+  content: '—';
+  position: absolute;
+  left: 0;
+  color: var(--highlight);
+  font-size: 0.65rem;
+  line-height: 1.7;
+  font-weight: 700;
+}
+[data-theme="dark"] .process-step ul li::before { color: var(--highlight); }
+ 
+/* [List text lightens over bg image on hover] */
+.process-step:hover ul li {
+  color: rgba(255, 255, 255, 0.82);
+}
+.process-step:hover ul li::before {
+  color: var(--highlight);
+}
+ 
+/* ============================================================
+  TOOLTIP
+  [Kept exactly from original — CSS-only pill below card]
+============================================================ */
+.step-tooltip {
+  position: absolute;
+  bottom: -36px;
+  left: 50%;
+  transform: translateX(-50%) translateY(5px);
+  background: var(--text);
+  color: var(--bg);
+  font-size: 0.7rem;
+  padding: 0.3rem 0.75rem;
+  border-radius: 50px;
+  white-space: nowrap;
+  opacity: 0;
+  transition: var(--transition);
+  pointer-events: none;
+  z-index: 20;
+}
+.process-step:hover .step-tooltip {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+[data-theme="dark"] .step-tooltip { background: var(--highlight); color: #000; }
+ 
+/* ============================================================
+  SCROLL-REVEAL
+  [unchanged from original]
+============================================================ */
+.scroll-reveal {
+  opacity: 0;
+  transform: translateY(32px);
+  transition: opacity 0.65s ease, transform 0.65s ease;
+}
+.scroll-reveal.revealed {
+  opacity: 1;
+  transform: none;
+}
+ 
+/* ============================================================
+  RESPONSIVE — ≤ 768px
+  "Vertical column. Clip-paths point DOWNWARD so the flow reads
+   top → bottom naturally.
+ 
+   Downward chevron coordinates (percentage-based):
+     Card 1: flat top, pointed bottom
+       polygon(0% 0%, 100% 0%, 100% 88%, 50% 100%, 0% 88%)
+     Cards 2-3: V-notch top, pointed bottom
+       polygon(0% 6%, 50% 0%, 100% 6%, 100% 88%, 50% 100%, 0% 88%)
+     Card 4: V-notch top, flat bottom
+       polygon(0% 6%, 50% 0%, 100% 6%, 100% 100%, 0% 100%)
+ 
+   Overlap via margin-top replaces margin-left."
+============================================================ */
+@media (max-width: 768px) {
+ 
+  .process-section { padding: 3rem 1.5rem; }
+ 
+  .process-flow {
+    flex-direction: column;
+    align-items: stretch;
+    overflow-x: visible;
+  }
+ 
+  /* [Reset horizontal sizing and overlap] */
+  .process-step {
+    margin-left: 0;
+    margin-top: -3%;
+    min-width: unset;
+    min-height: 180px;
+  }
+  .process-step:first-child { margin-top: 0; }
+ 
+  /* [Card 1: flat top, pointed bottom] */
+  .process-step:first-child {
+    clip-path: polygon(0% 0%, 100% 0%, 100% 88%, 50% 100%, 0% 88%);
+  }
+ 
+  /* [Cards 2-3: notch top, pointed bottom] */
+  .process-step:nth-child(2),
+  .process-step:nth-child(3) {
+    clip-path: polygon(0% 6%, 50% 0%, 100% 6%, 100% 88%, 50% 100%, 0% 88%);
+  }
+ 
+  /* [Card 4: notch top, flat bottom] */
+  .process-step:last-child {
+    clip-path: polygon(0% 6%, 50% 0%, 100% 6%, 100% 100%, 0% 100%);
+  }
+ 
+  /* [Content padding: symmetric on mobile] */
+  .step-content,
+  .process-step:not(:first-child) .step-content,
+  .process-step:last-child .step-content {
+    padding: 2.2rem 1.75rem 1.75rem;
+  }
+ 
+  /* [No lift transform on mobile — avoids layout shift] */
+  .process-step:hover {
+    transform: none;
+    filter: none;
+  }
+  
+  /* [NEW: Shift text UP to align with the number on mobile] */
+  .step-num {
+    position: absolute;
+    top: 2.2rem;
+    right: 1.75rem;
+    margin-bottom: 0;
+  }
+  
+  .process-step h4 {
+    padding-right: 3rem; /* Prevents long titles from hitting the number */
+    margin-top: -0.7rem; /* Fine-tunes the alignment to match perfectly */
+  }
+}
+ 
+/* ============================================================
+  VERY SMALL — ≤ 480px
+  "Revert to standard rounded rectangles to maximise text
+   readability on the narrowest phone screens."
+============================================================ */
+@media (max-width: 480px) {
+ 
+  /* [Override all clip-path variants with none] */
+  .process-step,
+  .process-step:first-child,
+  .process-step:nth-child(2),
+  .process-step:nth-child(3),
+  .process-step:last-child {
+    clip-path: none;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    margin-top: 0.75rem;
+  }
+  .process-step:first-child { margin-top: 0; }
+ 
+  /* [Symmetric padding for rectangles] */
+  .step-content,
+  .process-step:not(:first-child) .step-content {
+    padding: 1.75rem;
+  }
+}
+/* ===== 004index-skillpage-whaticando.html ===== */
+/* ============================================================
+  STYLES FOR: index-skillpage-whaticando.html
+============================================================ */
+
+
+
+
+
+
+.section-label{font-size:0.75rem;font-weight:500;letter-spacing:0.15em;text-transform:uppercase;color:var(--highlight);margin-bottom:0.6rem;}
+.section-title{font-size:clamp(1.75rem,3vw,2.5rem);font-weight:800;color:var(--text);line-height:1.15;margin-bottom:2rem;}
+.placeholder-label{font-size:0.8rem;color:var(--text3);text-align:center;}
+
+/* ============================================================
+  WHAT I CAN DO WRAPPER
+============================================================ */
+.skills-what { padding: 5rem 3rem; max-width: 1400px; margin: 0 auto; }
+
+.skills-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+
+.skill-card-big {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); overflow: hidden; transition: var(--transition);
+}
+.skill-card-big:hover { transform: translateY(-6px); box-shadow: 0 16px 40px var(--shadow-lg); }
+[data-theme="dark"] .skill-card-big:hover { box-shadow: 0 0 0 1px #00ffcc, 0 16px 40px rgba(0,255,204,0.1); }
+
+.skill-img-placeholder {
+  width: 100%; height: 220px;
+  background: var(--surface2); border-bottom: 1px solid var(--border);
+  overflow: hidden; /* Ensures the image doesn't break out of the rounded corners */
+}
+
+/* Add this new rule to make the images auto-fit perfectly */
+.skill-img-placeholder img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Crops the image to fill the box without squishing it */
+  object-position: center;
+  display: block;
+}
+
+.skill-card-big h3 { padding: 1.5rem 1.5rem 0.5rem; font-size: 1.25rem; font-weight: 700; }
+/* Replaces the old paragraph styling */
+.skill-card-big ul {
+  list-style: none;
+  padding: 0 1.5rem 1.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem; /* Spacing between lines */
+}
+
+/* Styles the text and creates the custom beige dash */
+.skill-card-big ul li {
+  font-size: 0.9rem;
+  color: var(--text2);
+  line-height: 1.4;
+  padding-left: 1.2rem; /* Makes room for the dash */
+  position: relative;
+}
+
+.skill-card-big ul li::before {
+  content: '—'; /* The dash */
+  position: absolute;
+  left: 0;
+  color: var(--highlight); /* Your #c8a96e color */
+  font-weight: 700;
+}
+.scroll-reveal{opacity:0;transform:translateY(32px);transition:opacity 0.65s ease,transform 0.65s ease;}
+.scroll-reveal.revealed{opacity:1;transform:none;}
+
+@media (max-width: 768px) {
+  .skills-what { padding: 3rem 1.5rem; }
+  .skills-cards { grid-template-columns: 1fr; }
+}
+/* ===== 003_index-skillpage-softskills.html ===== */
+/* ============================================================
+  STYLES FOR: index-skillpage-softskills.html
+============================================================ */
+
+
+
+
+
+
+.section-label{font-size:0.75rem;font-weight:500;letter-spacing:0.15em;text-transform:uppercase;color:var(--highlight);margin-bottom:0.6rem;max-width:1400px;margin-left:auto;margin-right:auto;}
+.section-title{font-size:clamp(1.75rem,3vw,2.5rem);font-weight:800;color:var(--text);line-height:1.15;margin-bottom:2rem;max-width:1400px;margin-left:auto;margin-right:auto;}
+
+/* ============================================================
+  SOFT SKILLS WRAPPER
+============================================================ */
+.soft-skills-section { padding: 5rem 3rem; background: var(--bg2); transition: background 0.4s ease; }
+
+.soft-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem; max-width: 1400px; margin: 0 auto;
+}
+
+.soft-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 2rem; transition: var(--transition);
+}
+.soft-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 30px var(--shadow-lg);
+  border-color: var(--highlight);
+}
+[data-theme="dark"] .soft-card:hover { border-color: #00ffcc; box-shadow: 0 0 0 1px #00ffcc, 0 12px 30px rgba(0,255,204,0.1); }
+
+/* Circular image container */
+.soft-icon { 
+  width: 56px; 
+  height: 56px; 
+  border-radius: 50%; 
+  overflow: hidden; 
+  margin-bottom: 1.2rem;
+  background: var(--surface2); /* Light placeholder background if image fails */
+  flex-shrink: 0;
+}
+/* Ensures the image auto-fits perfectly */
+.soft-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.soft-card h4 { font-size: 0.95rem; font-weight: 700; margin-bottom: 0.6rem; }
+.soft-card p  { font-size: 0.85rem; color: var(--text2); line-height: 1.6; }
+
+.scroll-reveal{opacity:0;transform:translateY(32px);transition:opacity 0.65s ease,transform 0.65s ease;}
+.scroll-reveal.revealed{opacity:1;transform:none;}
+
+@media (max-width: 1024px) { .soft-grid { grid-template-columns: repeat(2,1fr); } }
+@media (max-width: 768px) { .soft-skills-section { padding: 3rem 1.5rem; } .soft-grid { grid-template-columns: 1fr; } }
+/* ===== 001index-hobbypage-hero.html ===== */
+/* ============================================================
+  STYLES FOR: index-hobbypage-hero.html
+============================================================ */
+
+
+
+
+
+
+/* ============================================================
+  HOBBY HERO SECTION
+============================================================ */
+.hobby-hero {
+  position: relative;
+  height: 70vh;
+  min-height: 480px;
+  overflow: hidden;
+}
+
+/* Full-bleed background photo container */
+.hobby-hero-bg { 
+  position: absolute; 
+  inset: 0; 
+  background: var(--surface2); 
+}
+
+/* The actual image auto-fitting perfectly */
+.hobby-bg-img {
+  width: 100%; 
+  height: 100%;
+  object-fit: cover; /* Crops image cleanly without squishing */
+  object-position: center;
+  display: block;
+}
+
+/* Subtle dark gradient overlay so white text is always readable */
+.hobby-overlay {
+  position: absolute; 
+  inset: 0;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.6) 100%);
+}
+
+/* Main Title - Aligned to top right */
+.hobby-hero-text {
+  position: absolute;
+  top: 10%;
+  right: 3rem;
+  text-align: right;
+  z-index: 1;
+}
+.hobby-hero-text h1 {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(2rem, 3vw, 3rem); 
+  font-weight: 800;
+  color: white; 
+  line-height: 1.1; 
+  margin-bottom: 0;
+  text-shadow: 0 4px 24px rgba(0,0,0,0.4);
+}
+
+.name-accent { color: var(--highlight); }
+[data-theme="dark"] .name-accent { color: #00ffcc; }
+
+/* Caption - Pinned firmly to the bottom left corner */
+.hobby-caption {
+  position: absolute;
+  bottom: 1rem;
+  left: 2rem;
+  z-index: 1;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.7rem; 
+  font-weight: 400;
+  color: rgba(255,255,255,0.9); 
+  text-transform: uppercase; 
+  letter-spacing: 0.1em;
+  margin: 0;
+}
+
+/* Scroll-reveal */
+.scroll-reveal { opacity: 0; transform: translateY(32px); transition: opacity 0.65s ease, transform 0.65s ease; }
+.scroll-reveal.revealed { opacity: 1; transform: none; }
+
+/* ============================================================
+  RESPONSIVE MOBILE VIEW
+============================================================ */
+@media (max-width: 768px) {
+  .hobby-hero-text {
+    top: 20%;
+    right: 1.5rem;
+    left: 1.5rem; /* Allows text to wrap safely on tiny screens */
+  }
+  .hobby-hero-text h1 {
+    font-size: 1.6rem; /* Scaled down for mobile */
+  }
+  .hobby-caption {
+    bottom: 1.5rem;
+    left: 1.5rem;
+    right: 1.5rem; /* Wraps caption if it gets too long on a narrow phone */
+    font-size: 0.5rem;
+    line-height: 1.4;
+  }
+}
+/* ===== 002index-hobbypage-activities.html ===== */
+/* ============================================================
+  STYLES FOR: index-hobbypage-activities.html
+============================================================ */
+
+
+
+
+
+
+.section-label{font-size:0.75rem;font-weight:500;letter-spacing:0.15em;text-transform:uppercase;color:var(--highlight);margin-bottom:0.6rem;}
+.section-title{font-size:clamp(1.75rem,3vw,2.5rem);font-weight:800;color:var(--text);line-height:1.15;margin-bottom:2rem;}
+.placeholder-label{font-size:0.8rem;color:rgba(255,255,255,0.7);text-align:center;}
+
+/* ============================================================
+  ACTIVITIES SECTION WRAPPER
+============================================================ */
+.hobby-activities { padding: 5rem 3rem; max-width: 1400px; margin: 0 auto; }
+
+.hobby-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+
+.hobby-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); overflow: hidden; transition: var(--transition);
+}
+.hobby-card:hover { transform: translateY(-8px); box-shadow: 0 20px 40px var(--shadow-lg); }
+[data-theme="dark"] .hobby-card:hover { box-shadow: 0 0 0 1px #00ffcc, 0 20px 40px rgba(0,255,204,0.1); }
+
+/* Photo slot — themed gradient per card */
+/* Photo slot wrapper */
+.hobby-card-img {
+  width: 100%; 
+  height: 240px;
+  background: var(--surface2);
+  border-bottom: 1px dashed var(--border);
+  overflow: hidden; /* Ensures the image stays strictly inside the box */
+}
+/* NEW: Makes the image auto-fit and center perfectly */
+.hobby-card-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Zooms in to fill the box without distorting */
+  object-position: center 25%; /* Keeps the focus in the middle */
+  display: block;
+}
+.hobby-card.running .hobby-card-img { background: linear-gradient(135deg, #1a1a2e, #16213e); }
+.hobby-card.cycling .hobby-card-img { background: linear-gradient(135deg, #0f3460, #533483); }
+.hobby-card.travel  .hobby-card-img { background: linear-gradient(135deg, #e94560, #0f3460); }
+
+/* Info area below photo */
+.hobby-card-info { padding: 1.5rem; }
+.hobby-card-info h4 { font-size: 1rem; font-weight: 700; margin-bottom: 0.75rem; }
+.hobby-card-info p  { font-size: 0.875rem; color: var(--text2); line-height: 1.6; }
+.hobby-card-info ul { list-style: none; }
+.hobby-card-info ul li {
+  font-size: 0.875rem; color: var(--text2);
+  padding: 0.3rem 0; border-bottom: 1px solid var(--border);
+}
+.hobby-card-info ul li:last-child { border: none; }
+
+.scroll-reveal{opacity:0;transform:translateY(32px);transition:opacity 0.65s ease,transform 0.65s ease;}
+.scroll-reveal.revealed{opacity:1;transform:none;}
+
+@media (max-width: 768px) { .hobby-activities { padding: 3rem 1.5rem; } .hobby-grid { grid-template-columns: 1fr; } }
+/* ===== 003index-hobbypage-quote.html ===== */
+/* ============================================================
+  STYLES FOR: index-hobbypage-quote.html
+============================================================ */
+
+
+
+
+
+.placeholder-label{font-size:0.7rem;color:var(--text3);text-align:center;padding:0.5rem;}
+
+/* ============================================================
+  QUOTE SECTION
+============================================================ */
+.quote-section {
+  padding: 5rem 3rem;
+  background: var(--bg2);
+  transition: background 0.4s ease;
+}
+.quote-layout {
+  display: flex; align-items: center; gap: 4rem;
+  max-width: 800px; margin: 0 auto;
+}
+/* Container for the quote image */
+.quote-img-wrap {
+  width: 160px; height: 160px;
+  border-radius: var(--radius);
+  background: var(--surface2); 
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  overflow: hidden; /* Keeps the image inside the rounded corners */
+}
+/* Forces the image to fill the square perfectly without squishing */
+.quote-img-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}
+.hero-quote p {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(1.5rem, 3vw, 2.5rem);
+  font-weight: 700; font-style: italic;
+  line-height: 1.25; color: var(--text); margin-bottom: 1rem;
+}
+.hero-quote cite { font-size: 0.875rem; color: var(--text3); font-style: normal; }
+
+.scroll-reveal{opacity:0;transform:translateY(32px);transition:opacity 0.65s ease,transform 0.65s ease;}
+.scroll-reveal.revealed{opacity:1;transform:none;}
+
+@media (max-width: 768px) {
+  .quote-section { padding: 3rem 1.5rem; }
+  .quote-layout { flex-direction: column; gap: 2rem; text-align: center; }
+}
+/* ===== index-contactpage-hero.html ===== */
+/* ============================================================
+  STYLES FOR: index-contactpage-hero.html
+============================================================ */
+
+
+
+
+
+.section-label{font-size:0.75rem;font-weight:500;letter-spacing:0.15em;text-transform:uppercase;color:var(--highlight);margin-bottom:0.6rem;}
+.page-title{font-size:clamp(2rem,4vw,3.5rem);font-weight:800;line-height:1.1;margin-bottom:1rem;color:var(--text);}
+.name-accent{color:var(--highlight);}
+[data-theme="dark"] .name-accent{color:#00ffcc;}
+.contact-hero{text-align:center;}
+.scroll-reveal{opacity:0;transform:translateY(32px);transition:opacity 0.65s ease,transform 0.65s ease;}
+.scroll-reveal.revealed{opacity:1;transform:none;}
+/* ===== shared-footer.html ===== */
+/* ============================================================
+  STYLES FOR: shared-footer.html
+  "Footer wrapper, avatar slot, contact text, social icon
+   circles, resume shake-btn wrapper, dark mode, responsive."
+============================================================ */
+
+
+
+
+
+.placeholder-label{font-size:0.8rem;color:var(--text2);text-align:center;}
+
+/* ============================================================
+  FOOTER OUTER WRAPPER
+  "Flex row centred, wraps on mobile."
+============================================================ */
+.page-footer {
+  border-top: 1px solid var(--border);
+  padding: 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3rem;
+  flex-wrap: wrap;
+  background: var(--bg);
+}
+
+/* Avatar image slot */
+.footer-avatar {
+  width: 60px; height: 60px;
+  border-radius: 12px;
+  border: 1.5px dashed var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  overflow: hidden;
+}
+.footer-avatar img { width:100%; height:100%; object-fit:cover; border-radius:12px; }
+
+/* Contact info text block */
+.footer-contact { text-align: center; }
+.footer-contact p { font-size: 0.85rem; color: var(--text2); line-height: 1.8; }
+
+/* Social icon row */
+.footer-social { display: flex; gap: 0.6rem; }
+.social-icon {
+  width: 38px; height: 38px;
+  border: 1.5px solid var(--border);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.65rem; font-weight: 700;
+  font-family: 'Syne', sans-serif;
+  color: var(--text2); text-decoration: none;
+  transition: var(--transition);
+}
+.social-icon:hover { background: var(--text); color: var(--bg); border-color: var(--text); }
+[data-theme="dark"] .social-icon:hover { background: #00ffcc; color: #000; border-color: #00ffcc; }
+
+/* Resume shake-button wrapper (Skills / Hobby / Contact pages) */
+.resume-shake-wrap {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  margin-bottom: 1rem;
+}
+.btn-resume {
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  padding: 1rem 2.5rem;
+  background: var(--text);
+  color: var(--bg);
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: var(--transition);
+}
+.btn-resume:hover { transform: scale(1.03); }
+[data-theme="dark"] .btn-resume { background: #00ffcc; color: #000; }
+
+/* Shake animation (CSS-only) */
+.shake-btn { animation: shake 2.5s ease-in-out infinite; }
+@keyframes shake {
+  0%,100%{ transform:rotate(0deg); }
+  10%    { transform:rotate(-3deg); }
+  20%    { transform:rotate(3deg); }
+  30%    { transform:rotate(-2deg); }
+  40%    { transform:rotate(2deg); }
+  50%,90%{ transform:rotate(0deg); }
+}
+
+/* ============================================================
+  RESPONSIVE
+============================================================ */
+@media (max-width: 768px) {
+  .page-footer { flex-direction: column; gap: 1.5rem; text-align: center; }
+}
+/* Mobile menu trigger: hidden on desktop, shown on mobile */
+.mobile-menu-trigger{display:none;align-items:center;gap:10px;cursor:pointer;}
+@media(max-width:768px){
+  .mobile-menu-trigger{display:flex;}
+}
+
+/* ── Contact page: fill viewport height so footer sits at bottom ── */
+#page-contact {
+  min-height: calc(100vh - 68px);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.contact-hero {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 3rem 2rem;
+  text-align: center;
+}
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+  FLOATING TOOLTIP (extracurricular section)
+============================================================ -->
+<div class="tt-box" id="ttBox" role="tooltip" aria-hidden="true">
+  <div class="tt-img-wrap" id="ttImgWrap"></div>
+  <div class="tt-body">
+    <span class="tt-category" id="ttCategory"></span>
+    <span class="tt-title"    id="ttTitle"></span>
+    <span class="tt-desc"     id="ttDesc"></span>
+    <span class="tt-date"     id="ttDate"></span>
+  </div>
+</div>
+
+<!-- ============================================================
+  NAVBAR (fixed, always visible)
+============================================================ -->
+<!-- ============================================================
+  START: SHARED NAVBAR
+  "Fixed navigation bar — logo left, page links centre,
+   controls right. Mobile collapses to hamburger + dropdown."
+============================================================ -->
+<nav id="navbar">
+
+  <!-- NAVBAR: Logo — avatar image + site name -->
+  <div class="nav-logo" onclick="showPage('main')">
+    <img src="../main-img/avatar-removebg.png" alt="Avatar">
+    <span class="logo-text">Ratchaphruek</span>
+  </div>
+
+  <!-- NAVBAR: Centred page links -->
+  <div class="nav-links">
+    <a href="#" class="nav-link active" data-page="main" onclick="showPage('main');return false;">Home</a>
+    <a href="#" class="nav-link"        data-page="skills" onclick="showPage('skills');return false;">Skills</a>
+    <a href="#" class="nav-link"        data-page="hobby" onclick="showPage('hobby');return false;">Hobby</a>
+  </div>
+
+  <!-- NAVBAR: Right controls -->
+  <div class="nav-right">
+
+    <!-- HAMBURGER TRIGGER (mobile only) -->
+    <div class="mobile-menu-trigger" onclick="toggleMobileMenu()">
+      <span class="menu-text-label">MENU</span>
+      <button class="hamburger" aria-label="Open menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+
+    <!-- THEME TOGGLE -->
+    <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme">
+      <span class="theme-icon light-icon">☀️</span>
+      <span class="theme-icon dark-icon">🌙</span>
+    </button>
+
+    <!-- CONTACT CTA -->
+    <button class="btn-contact shake-btn" onclick="showPage('contact')">Contact Me</button>
+
+  </div>
+</nav>
+
+<!-- MOBILE DROPDOWN MENU -->
+<div class="mobile-menu" id="mobile-menu">
+  <a href="#" class="mobile-menu-link active" data-page="main"   onclick="showPage('main');closeMobileMenu();return false;">Home</a>
+  <a href="#" class="mobile-menu-link"        data-page="skills" onclick="showPage('skills');closeMobileMenu();return false;">Skills</a>
+  <a href="#" class="mobile-menu-link"        data-page="hobby"  onclick="showPage('hobby');closeMobileMenu();return false;">Hobby</a>
+  <a href="#" class="mobile-menu-link" data-page="contact" onclick="showPage('contact');closeMobileMenu();return false;">Contact</a>
+</div>
+<!-- ============================================================
+  END: SHARED NAVBAR
+============================================================ -->
+
+<!-- PAGE: HOME -->
+<div id="page-main" class="spa-page spa-active">
+<!-- ============================================================
+  START: MAIN PAGE — HERO SECTION
+  "Two-column hero: name/bio/CTA on left, rotating profile
+   photo on right. Dot-grid background. Staggered fade-in."
+============================================================ -->
+<section class="hero">
+
+  <!-- HERO: Dot-grid background decoration -->
+  <div class="hero-bg-grid"></div>
+
+  <!-- HERO: Left — text content -->
+  <div class="hero-content">
+    <h1 class="hero-name animate-in" style="--d:0.2s">
+      Ratchaphruek<br><span class="name-accent">Srisuphachoke</span>
+    </h1>
+    <p class="hero-bio animate-in" style="--d:0.35s">
+      A Junior year student at <strong>Thammasat University</strong>, School of Global Studies, major in
+      <strong>Social Entrepreneurship</strong>. Aspiring to build strengths through hands-on
+      professional work experience in<br>
+      <span class="highlight-text">Sale / Marketing / BD / ESG.</span>
+    </p>
+    <div class="hero-cta animate-in" style="--d:0.5s">
+      <button class="btn-primary">View My Experiences</button>
+      <button class="btn-outline">Contact Me</button>
+    </div>
+  </div>
+
+  <!-- HERO: Right — rotating profile photo -->
+  <!-- To add photos: put extra paths separated by | in data-slides -->
+  <div class="hero-img-wrap animate-in" style="--d:0.3s">
+    <div class="hero-img-placeholder">
+      <div class="placeholder-person">
+        <img
+          id="hero-slide-img"
+          src="../main-img/TK-hero-shadow.png"
+          data-slides="../main-img/TK-hero-shadow.png|/Claude AI portfolio/static/img/MeAvatar.jpg|../main-img/TK-shadow2.png"
+          alt="Ratchaphruek Profile image"
+          style="transition:opacity 0.5s ease;">
+      </div>
+    </div>
+    <!-- Decorative blurred circle behind photo -->
+    <div class="hero-decoration"></div>
+  </div>
+
+</section>
+<!-- ============================================================
+  END: MAIN PAGE — HERO SECTION
+============================================================ -->
+<!-- ============================================================
+  START: MAIN PAGE — EDUCATION SECTION
+  "Two-column layout: degree details left, university logo right.
+   Arrow-list highlights key learning pillars. Scroll-reveal."
+============================================================ -->
+<section class="education-section scroll-reveal">
+  <div class="section-label"></div>
+
+  <div class="edu-grid">
+
+    <!-- EDUCATION: Left — text, list, buttons -->
+    <div class="edu-text">
+      <h2 class="section-title">My Education</h2>
+      <h3 class="edu-degree">
+        Bachelor of Arts in Global Studies and Social Entrepreneurship
+        <span class="gsse-tag">(GSSE)</span>
+      </h3>
+      <ul class="edu-list">
+        <li>Active project-based learning.</li>
+        <li>Design Thinking → Research → Analysis → Presentation.</li>
+        <li>Multidisciplinary study: Society, Sustainability,<br> Business &amp; Finance, and Marketing.</li>
+      </ul>
+      <div class="edu-actions">
+        <button class="btn-primary" href="https://drive.google.com/file/d/1PdVUsrhBCG_tpT6qlhuU50nxfn707w-a/view?usp=sharing">View My Transcript</button>
+        <div class="gpax-badge">GPAX 3.64</div>
+      </div>
+    </div>
+
+    <!-- EDUCATION: Right — university logo -->
+    <div class="edu-logo-wrap">
+      <div class="edu-logo-placeholder">
+        <div class="placeholder-label">
+          <img src="/Claude AI portfolio/static/img/sgs_logo.png" width="300px" alt="SGS Logo">
+        </div>
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+</section>
+<!-- ============================================================
+  END: MAIN PAGE — EDUCATION SECTION
+============================================================ -->
+<section class="projects-section scroll-reveal">
+
+  <span class="section-label">Academic Work</span>
+  <h2 class="section-title">Selected School Projects</h2>
+
+  <div class="projects-accordion" id="accordionRow">
+
+    <div class="project-card active"
+         data-url="https://drive.google.com/file/d/17wo1Z8KmKxfuazFzB-P8SjAQDlQJ69sp/view?usp=sharing"
+         data-num="01">
+
+      <span class="c-num-corner">01</span>
+
+      <div class="card-collapsed">
+        <span class="c-num-idle">01</span>
+        <span class="c-title-vertical">Team Research Project</span>
+      </div>
+
+      <div class="card-expanded">
+        <div class="proj-thumb">
+          <img src="./main-img/researchproject.png" alt="Project 01" style="width: 100%; height: 100%; object-fit: cover; border-radius: var(--radius-sm);">
+        </div>
+        <div class="proj-text">
+          <span class="c-num-label">01</span>
+          <span class="c-title-h">Team Research Project</span>
+          <p class="c-desc">Research methodologies | Stakeholders interview | Research Documentation and Presentation</p>
+        </div>
+      </div>
+
+      <a class="card-link" href="https://drive.google.com/file/d/17wo1Z8KmKxfuazFzB-P8SjAQDlQJ69sp/view?usp=sharing"
+         target="_blank" rel="noopener noreferrer"
+         title="Open project" onclick="event.stopPropagation()">
+        <svg viewBox="0 0 14 14"><line x1="2" y1="12" x2="12" y2="2"/><polyline points="5,2 12,2 12,9"/></svg>
+      </a>
+    </div>
+    <div class="project-card"
+         data-url="https://drive.google.com/file/d/1951ecdPVkKccLOAVPtzTyhEdW3Dlm2AD/view?usp=sharing"
+         data-num="02">
+
+      <span class="c-num-corner">02</span>
+
+      <div class="card-collapsed">
+        <span class="c-num-idle">02</span>
+        <span class="c-title-vertical">Urbanism Study Individual Research</span>
+      </div>
+
+      <div class="card-expanded">
+        <div class="proj-thumb">
+          <img src="./main-img/Urbanplanningbkk.jpg" alt="Project 02" style="width: 100%; height: 100%; object-fit: cover; object-position: left; border-radius: var(--radius-sm);">
+        </div>
+        <div class="proj-text">
+          <span class="c-num-label">02</span>
+          <span class="c-title-h">Bangkok Planning Study</span>
+          <p class="c-desc">Urban studies Bangkok's urban planning development Bankground + Contexts + Current Practice</p>
+        </div>
+      </div>
+
+      <a class="card-link" href="https://drive.google.com/file/d/1951ecdPVkKccLOAVPtzTyhEdW3Dlm2AD/view?usp=sharing"
+         target="_blank" rel="noopener noreferrer"
+         title="Open project" onclick="event.stopPropagation()">
+        <svg viewBox="0 0 14 14"><line x1="2" y1="12" x2="12" y2="2"/><polyline points="5,2 12,2 12,9"/></svg>
+      </a>
+    </div>
+    <div class="project-card"
+         data-url="https://drive.google.com/file/d/1rm1Gio-_8o7bLj_0YoR1M3jAmt2fCRld/view?usp=sharing"
+         data-num="03">
+
+      <span class="c-num-corner">03</span>
+
+      <div class="card-collapsed">
+        <span class="c-num-idle">03</span>
+        <span class="c-title-vertical">Field Immersion</span>
+      </div>
+
+      <div class="card-expanded">
+        <div class="proj-thumb">
+          <img src="./main-img/Fieldimersion.png" alt="Project 03" style="width: 100%; height: 100%; object-fit: cover; border-radius: var(--radius-sm);">
+        </div>
+        <div class="proj-text">
+          <span class="c-num-label">03</span>
+          <span class="c-title-h">Community Engagement in Chainat province</span>
+          <p class="c-desc">Immersive observations and community assimilation. Cross ultural communication. Local understanding</p>
+        </div>
+      </div>
+
+      <a class="card-link" href="https://drive.google.com/file/d/1rm1Gio-_8o7bLj_0YoR1M3jAmt2fCRld/view?usp=sharing"
+         target="_blank" rel="noopener noreferrer"
+         title="Open project" onclick="event.stopPropagation()">
+        <svg viewBox="0 0 14 14"><line x1="2" y1="12" x2="12" y2="2"/><polyline points="5,2 12,2 12,9"/></svg>
+      </a>
+    </div>
+    <div class="project-card"
+         data-url="https://drive.google.com/file/d/1JH3sfI6TS0zpA7cwQabO0xFSmXri9ALg/view?usp=sharing"
+         data-num="04">
+
+      <span class="c-num-corner">04</span>
+
+      <div class="card-collapsed">
+        <span class="c-num-idle">04</span>
+        <span class="c-title-vertical">Firm Finance Analysis</span>
+      </div>
+
+      <div class="card-expanded">
+        <div class="proj-thumb">
+          <img src="./main-img/FinanceAnalysis.png" alt="Project 04" style="width: 100%; height: 100%; object-fit: cover; border-radius: var(--radius-sm);">
+        </div>
+        <div class="proj-text">
+          <span class="c-num-label">04</span>
+          <span class="c-title-h">Financial Statement Analysis</span>
+          <p class="c-desc">Company financial assessment by analysing with financial ratios</p>
+        </div>
+      </div>
+
+      <a class="card-link" href="https://drive.google.com/file/d/1JH3sfI6TS0zpA7cwQabO0xFSmXri9ALg/view?usp=sharing"
+         target="_blank" rel="noopener noreferrer"
+         title="Open project" onclick="event.stopPropagation()">
+        <svg viewBox="0 0 14 14"><line x1="2" y1="12" x2="12" y2="2"/><polyline points="5,2 12,2 12,9"/></svg>
+      </a>
+    </div>
+    </div>
+  </section>
+<!-- ============================================================
+  START: MAIN PAGE — AWARDS SECTION
+  "3-card horizontal accordion with 2D hover expansion.
+   Card 01 (Startup Contest) is active / expanded on load.
+   Hover any card to expand it; mouse leaves row → card 01."
+============================================================ -->
+<section class="awards-section scroll-reveal">
+
+  <span class="section-label">Recognition</span>
+  <h2 class="section-title">Awards</h2>
+
+  <!-- ========================================================
+    ACCORDION ROW
+    data-url → link that opens in a new tab when card is clicked
+    First card carries class="award-card active" for the default
+    expanded state on page load.
+  ======================================================== -->
+  <div class="awards-accordion" id="awardsRow">
+
+    <!-- ── AWARD CARD 01: Thammasat Startup Contest (default active) ── -->
+    <div class="award-card active"
+         data-url="https://drive.google.com/file/d/1kKnGhL_7V2qPAZZqnUvpbQRJ3AyPmBFR/view?usp=sharing">
+
+      <!-- COLLAPSED STATE: icon · year · vertical title -->
+      <div class="card-collapsed">
+        <span class="c-icon-idle">Thammasat Startup Contest 2024</span>
+        <span class="c-year-idle">16 March 2024</span>
+        <span class="c-title-vertical">Team Fliery</span>
+      </div>
+
+      <!-- EXPANDED STATE: thumbnail + text -->
+      <div class="card-expanded">
+
+        <!-- Upper half: award photo (replace src with your real image) -->
+        <div class="award-thumb">
+          <img src="../main-img/TU-start-up-win.jpg"
+               alt="Thammasat Startup Contest 2024 — 1st Runner Up"
+               style="width:100%;height:100%;object-fit:cover;object-position:center;border-radius:var(--radius-sm);">
+        </div>
+
+        <!-- Lower half: year · badge · title · description -->
+        <div class="award-body">
+          <span class="award-tag">16 March 2024</span>
+          <span class="award-badge-pill">1st Runner Up</span>
+          <span class="award-title">Thammasat Startup Contest</span>
+          <p class="award-desc">
+            Secured 2nd Place Award, outperforming 50+ competing teams.
+            Team Leader for sustainable business idea <strong>"Fliery"</strong> —
+            business model pitching - utilizing Black Soldier Fly (BSF) bioconversion to upcycle
+            organic food waste into protein products for exotic pets.
+          </p>
+        </div>
+
+      </div>
+
+    </div>
+    <!-- END AWARD CARD 01 -->
+
+
+    <!-- ── AWARD CARD 02: Climate Change-Makers Challenge ── -->
+    <div class="award-card"
+         data-url="https://devpost.com/software/ecowiz-ysh0ax?_gl=1*rq8ff6*_gcl_au*MTI5MTgzNTIyNi4xNzc1MDMxNjQw*_ga*MjEzMjM3MDk5My4xNzc1MDMxNjQw*_ga_0YHJK3Y10M*czE3NzUwMzE2NDAkbzEkZzEkdDE3NzUwMzE2NzckajIzJGwwJGgw">
+
+      <!-- COLLAPSED STATE -->
+      <div class="card-collapsed">
+        <span class="c-icon-idle">International Hackaton</span>
+        <span class="c-year-idle">21-24 February 2025</span>
+        <span class="c-title-vertical">Climate Change-Makers Challenge 2025</span>
+      </div>
+
+      <!-- EXPANDED STATE -->
+      <div class="card-expanded">
+
+        <!-- Upper half: hackathon photo (replace src) -->
+        <div class="award-thumb">
+          <img src="./main-img/Ecowizwin.png"
+               alt="Climate Change-Makers Challenge 2025"
+               style="width:100%;height:100%;object-fit:cover;object-position:center;border-radius:var(--radius-sm);">
+        </div>
+
+        <!-- Lower half: year · badge · title · description -->
+        <div class="award-body">
+          <span class="award-tag">21-24 February 2025</span>
+          <span class="award-badge-pill">Best of the Rest</span>
+          <span class="award-title">Climate Change-Makers Challenge 2025</span>
+          <p class="award-desc">
+            Proposing an idea E-waste recycling app <strong>"Ecowiz"</strong>. Target to tackle e-waste sorting issue by simplify users to find nearby dropping points 
+            Ideation and pitching within 3-day Hackathon timeframe.
+          </p>
+        </div>
+
+      </div>
+
+    </div>
+    <!-- END AWARD CARD 02 -->
+
+
+    <!-- ── AWARD CARD 03: Dean's List Award ── -->
+    <div class="award-card"
+         data-url="https://example.com/deans-list">
+
+      <!-- COLLAPSED STATE -->
+      <div class="card-collapsed">
+        <span class="c-icon-idle">School of Global Study</span>
+        <span class="c-year-idle">2024</span>
+        <span class="c-title-vertical">Dean's List Award</span>
+      </div>
+
+      <!-- EXPANDED STATE -->
+      <div class="card-expanded">
+
+        <!-- Upper half: certificate / ceremony photo (replace src) -->
+        <div class="award-thumb">
+          <img src="placeholder.jpg"
+               alt="Dean's List Award 2024"
+               style="width:100%;height:100%;object-fit:cover;object-position:center;border-radius:var(--radius-sm);">
+        </div>
+
+        <!-- Lower half: year · badge · title · description -->
+        <div class="award-body">
+          <span class="award-tag">First Year</span>
+          <span class="award-badge-pill">Academic Excellency</span>
+          <span class="award-title">Dean's List Award</span>
+          <p class="award-desc">
+            Academic Excellency recognition for outstanding academic grading performance.
+          </p>
+        </div>
+
+      </div>
+
+    </div>
+    <!-- END AWARD CARD 03 -->
+
+  </div>
+  <!-- END ACCORDION ROW -->
+
+</section>
+<!-- ============================================================
+  END: MAIN PAGE — AWARDS SECTION
+============================================================ -->
+<!-- ============================================================
+  START: MAIN PAGE — INTERN EXPERIENCE SECTION
+  "Two work-experience cards. Hover reveals company profile
+   overlay. Click also toggles overlay on mobile."
+============================================================ -->
+<section class="intern-section scroll-reveal">
+  <div class="section-label">Work</div>
+  <h2 class="section-title">Intern Experiences</h2>
+
+  <div class="intern-grid">
+
+    <!-- INTERN CARD 1: Happy Ground -->
+    <div class="intern-card" data-company="Happy Ground" data-period="Sep 2024 – Apr 2025" data-role="Research Assistant (Remote)">
+      <div class="intern-logo-placeholder">
+        <img src="../main-img/logo-happyground.png" alt="Happy Ground Logo" style="width: 100%; height: 100%; object-fit: contain; padding: 0.5px;">      </div>
+      <div class="intern-info">
+        <div class="intern-header">
+          <div>
+            <h4>HAPPY GROUND CARBON Co., Ltd</h4>
+            <span class="intern-role">Research Assistant (Remote)</span>
+          </div>
+          <span class="intern-period">Sep 2024 – Apr 2025</span>
+        </div>
+        <ul>
+          <li>Conducted comprehensive market &amp; Thai Agri landscape research across main economic crops.</li>
+          <li>Primary research 30+ farmers interviewed on-site & on-call, Secondary document reviews.</li>
+          <li>Synthesized complex findings into visual slide decks and present to supervisor in English.</li>
+        </ul>
+      </div>
+      <a href="https://www.linkedin.com/company/happy-ground/" target="_blank" rel="noopener noreferrer" class="intern-hover-overlay" style="background-image: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('../main-img/bg-happyground.jpg'); background-size: cover; background-position: center; text-decoration: none;">
+        <div class="placeholder-label">▻ Click to see company profile</div>
+        <p>Biochar climate-tech start-up | Scope3 supply chain corbon mitigation</p>
+      </a>
+    </div>
+
+    <!-- INTERN CARD 2: Choen Ter -->
+    <div class="intern-card" data-company="Choen Ter" data-period="Jun 2024 – Aug 2024" data-role="Operations Intern">
+      <div class="intern-logo-placeholder">
+        <img src="../main-img/choenter-logo.png" alt="Happy Ground Logo" style="width: 100%; height: 100%; object-fit: contain; padding: 0px;">      
+      </div>
+      <div class="intern-info">
+        <div class="intern-header">
+          <div>
+            <h4>Choen Ter International Trade Co., Ltd</h4>
+            <span class="intern-role">Operations Intern</span>
+          </div>
+          <span class="intern-period">Jun 2024 – Aug 2024</span>
+        </div>
+        <ul>
+          <li>Assisted general administrative tasks for order management &amp; packing logistics.</li>
+          <li>Spreadsheet order management using VLOOKUP, conditional formatting &amp; Filter for inventory tracking.</li>
+          <li>Assisted on-site communications in English with Taiwanese live streamers</li>
+        </ul>
+      </div>
+      <a href="https://www.choenter.com/" target="_blank" rel="noopener noreferrer" class="intern-hover-overlay" style="background-image: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('YOUR_BG_IMAGE.jpg'); background-size: cover; background-position: center; text-decoration: none;">
+        <div class="placeholder-label">▻ Click to see company profile</div>
+        <p>China & Taiwan export facilitator</p>
+      </a>
+    </div>
+
+  </div>
+</section>
+<!-- ============================================================
+  END: MAIN PAGE — INTERN EXPERIENCE SECTION
+============================================================ -->
+<div class="tt-box" id="ttBox" role="tooltip" aria-hidden="true">
+  <div class="tt-img-wrap" id="ttImgWrap"></div>
+  <div class="tt-body">
+    <span class="tt-category" id="ttCategory"></span>
+    <span class="tt-title"    id="ttTitle"></span>
+    <span class="tt-desc"     id="ttDesc"></span>
+    <span class="tt-date"     id="ttDate"></span>
+  </div>
+</div>
+
+<section class="extra-section scroll-reveal">
+  <div class="section-label">Beyond Class</div>
+  <h2 class="section-title">Extra Curricular Activities</h2>
+
+  <div class="extra-layout">
+
+    <div class="clubs-wrap">
+      <h3>Student Clubs Experiences</h3>
+      <div class="clubs-grid">
+
+        <a href="https://www.instagram.com/gsse.networkclub/?hl=en"
+           target="_blank" rel="noopener noreferrer"
+           class="club-circle"
+           data-club="GVCN"
+           data-tt-img="../main-img/GVCN-bg.jpg"
+           data-tt-cat="Student Club"
+           data-tt-title="GVCN"
+           data-tt-desc="Club Treasurer — budget proposal and reimbursement"
+           style="text-decoration: none;">
+          <img src="../main-img/GVCN logo.jpg" alt="GVCN Logo"
+               style="width:100%;height:100%;object-fit:cover;border-radius:50%;">
+          <div class="club-hover">
+            <div class="placeholder-label"></div>
+            <p>Click to view club profile</p>
+          </div>
+        </a>
+
+        <a href="https://www.instagram.com/gsse_studentcouncil/?hl=en"
+           target="_blank" rel="noopener noreferrer"
+           class="club-circle"
+           data-club="STUCO"
+           data-tt-img="../main-img/stuco.jpg"
+           data-tt-cat="Student Club"
+           data-tt-title="STUCO"
+           data-tt-desc="Club Welfare / Event Photographer"
+           style="text-decoration: none;">
+          <img src="../main-img/Stuco-logo.jpg" alt="STUCO Logo"
+               style="width:100%;height:100%;object-fit:cover;border-radius:50%;">
+          <div class="club-hover">
+            <div class="placeholder-label"></div>
+            <p>Click to view club profile</p>
+          </div>
+        </a>
+
+        <a href="https://www.instagram.com/anurak.tu/?hl=en"
+           target="_blank" rel="noopener noreferrer"
+           class="club-circle"
+           data-club="Anurak"
+           data-tt-img="../main-img/anurak-bg.jpg"
+           data-tt-cat="Student Club"
+           data-tt-title="Anurak"
+           data-tt-desc="Club coordinator / logistics — Camp in Chiang Rai & Seminar"
+           style="text-decoration: none;">
+          <img src="../main-img/Aunarak logo.jfif" alt="Anurak Logo"
+               style="width:100%;height:100%;object-fit:cover;border-radius:50%;">
+          <div class="club-hover">
+            <div class="placeholder-label"></div>
+            <p>Click to view club profile</p>
+          </div>
+        </a>
+
+      </div>
+    </div><div class="timeline-wrap">
+      <h3>Other Activities</h3>
+
+      <a target="_blank" rel="noopener noreferrer"
+         class="timeline-item" style="text-decoration: none; color: inherit;"
+         data-tt-img="../main-img/rice-research.jpg"
+         data-tt-cat="Research"
+         data-tt-title="Graduate Research Fellow / Field Researcher"
+         data-tt-desc="Rice production in SEA — field research and data collection across 100+ farmers in Northeast Thailand"
+         data-tt-date="July 2025">
+        <div class="timeline-dot research"></div>
+        <div class="timeline-content">
+          <div class="timeline-meta">
+            <span class="tl-category">Research</span>
+            <span class="tl-date">July 2025</span>
+          </div>
+          <h4>Graduate Research Fellow / Field Researcher data collocter</h4>
+          <p>Rice production in SEA</p>
+        </div>
+      </a>
+
+      <a href="https://drive.google.com/file/d/1n8sclPp9ZuyZflaEh9VYsW8LagnaW6Pd/view?usp=sharing" target="_blank" rel="noopener noreferrer"
+         class="timeline-item" style="text-decoration: none; color: inherit;"
+         data-tt-img="../main-img/ADB.jpg"
+         data-tt-cat="Youth Development"
+         data-tt-title="Asian Development Bank / Youth Capacity Workshop"
+         data-tt-desc="Youth Capacity Workshop hosted by the Asian Development Bank. 'Developing Youth Solutions for Urban Climate Resilience'"
+         data-tt-date="Mar 2024"
+         data-tt-icon="🏛️">
+        <div class="timeline-dot youth"></div>
+        <div class="timeline-content">
+          <div class="timeline-meta">
+            <span class="tl-category">Youth Development Program</span>
+            <span class="tl-date">Mar 2025</span>
+          </div>
+          <h4>Asian Development Bank / Youth Capacity Workshop</h4>
+          <p>Urban Oasis Green Bus Stop</p>
+        </div>
+      </a>
+
+      <a href="https://drive.google.com/file/d/1HP-1unAwk56AoJNEh8_Gd6kQZBy0L-KI/view?usp=sharing" target="_blank" rel="noopener noreferrer"
+         class="timeline-item" style="text-decoration: none; color: inherit;"
+         data-tt-img="../main-img/seed.jpg"
+         data-tt-cat="Youth Development"
+         data-tt-title="Seed Thailand Year Four"
+         data-tt-desc="Intensive Youth Development Programme focusing on local impact."
+         data-tt-date="Mar 2024"
+         data-tt-icon="🌱">
+        <div class="timeline-dot youth"></div>
+        <div class="timeline-content">
+          <div class="timeline-meta">
+            <span class="tl-category">Youth Development Program</span>
+            <span class="tl-date">Jul 2024</span>
+          </div>
+          <h4>Seed Thailand Year Four</h4>
+          <p>Team project Koh Kret trip with different universities joining</p>
+        </div>
+      </a>
+
+      <a href="https://drive.google.com/file/d/18gJMm4mQ7KinRDf-E9pP9r-HFlZJRIOK/view?usp=sharing" target="_blank" rel="noopener noreferrer"
+         class="timeline-item" style="text-decoration: none; color: inherit;"
+         data-tt-vid="../main-img/TM Tonkoon.mp4" 
+         data-tt-img=""
+         data-tt-cat="Public Speaking"
+         data-tt-title="Toastmaster Club"
+         data-tt-desc="International Speech Contest 2024 on stage — 'Self-doubt'."
+         data-tt-date="19 May 2024"
+         data-tt-icon="🎤">
+        <div class="timeline-dot speaking"></div>
+        <div class="timeline-content">
+          <div class="timeline-meta">
+            <span class="tl-category">English Public Speaking</span>
+            <span class="tl-date">19 May 2024</span>
+          </div>
+          <h4>Toastmaster Club</h4>
+          <p>International Speech Contest 2024</p>
+        </div>
+      </a>
+
+      <a target="_blank" rel="noopener noreferrer"
+         class="timeline-item" style="text-decoration: none; color: inherit;"
+         data-tt-img="../main-img/volunteer.jpg"
+         data-tt-cat="Volunteer"
+         data-tt-title="Sleeping Bag Teacher Foundation"
+         data-tt-desc="One-week English teacher camp at a rural school in Sukhothai province."
+         data-tt-date="Nov 2022"
+         data-tt-icon="📚">
+        <div class="timeline-dot volunteer"></div>
+        <div class="timeline-content">
+          <div class="timeline-meta">
+            <span class="tl-category">Volunteer</span>
+            <span class="tl-date">Nov 2022</span>
+          </div>
+          <h4>Sleeping Bag Teacher Foundation</h4>
+          <p>English teacher volunteer school in Sukhothai</p>
+        </div>
+      </a>
+
+    </div></div></section>
+</div><!-- END #page-main -->
+
+<!-- PAGE: SKILLS -->
+<div id="page-skills" class="spa-page">
+<!-- ============================================================
+  START: SKILLS PAGE — PAGE HERO
+  "Centred heading banner: label + title with accent + subtitle."
+============================================================ -->
+<section class="page-hero skills-hero scroll-reveal">
+  <div class="section-label"></div>
+  <h1 class="page-title">
+    My <span class="name-accent">Problem Solving</span> Process <span class="name-accent">&</span> Capabilites
+  </h1>
+  <p class="page-subtitle">
+    Skills built at Global Studies, Thammasat — through a design thinking
+  </p>
+</section>
+<!-- ============================================================
+  END: SKILLS PAGE — PAGE HERO
+============================================================ -->
+<!-- ============================================================
+  START: SKILLS PAGE — DESIGN THINKING PROCESS FLOW
+  "4 interlocking chevron cards. No emoji. Dash bullet markers.
+   Hover reveals bg image + dark overlay. Card 1: flat-left.
+   Cards 2–4: V-notch-left nesting into previous card's point.
+   Card 4: flat-right. Stagger fade-in via JS on scroll."
+============================================================ -->
+<section class="process-section scroll-reveal">
+  <div class="process-flow">
+ 
+    <!-- ====================================================
+      STEP 1 — Empathize & Discover
+      Shape: flat-left, pointed-right
+      [Replace data-bg-img with your real image path]
+    ==================================================== -->
+    <div class="process-step" style="--i:0"
+         data-bg-img="../skill-img/research-phrase.jpg">
+ 
+      <!-- [Background image layer — JS injects src from data-bg-img] -->
+      <div class="step-bg"></div>
+ 
+      <!-- [Scrim / overlay — solid surface default, darkens on hover] -->
+      <div class="step-overlay"></div>
+ 
+      <!-- [Text content — above bg and overlay] -->
+      <div class="step-content">
+        <div class="step-num">1</div>
+        <h4>Empathize &amp; Define</h4>
+        <p class="step-sub">Research Phase</p>
+        <ul>
+          <li>Primary &amp; Secondary Research</li>
+          <li>Stakeholder Engagement</li>
+          <li>Problem identification</li>
+        </ul>
+      </div>
+ 
+      <!-- [CSS-only tooltip pill below card on hover] -->
+      <div class="step-tooltip"></div>
+    </div>
+ 
+ 
+    <!-- ====================================================
+      STEP 2 — Define & Analyze
+      Shape: V-notch-left, pointed-right
+      [Replace data-bg-img with your real image path]
+    ==================================================== -->
+    <div class="process-step" style="--i:1"
+         data-bg-img="../skill-img/ideation-phrase.jpg">
+ 
+      <div class="step-bg"></div>
+      <div class="step-overlay"></div>
+ 
+      <div class="step-content">
+        <div class="step-num">2</div>
+        <h4>Ideate</h4>
+        <p class="step-sub">Creativity Phase</p>
+        <ul>
+          <li>Ideations</li>
+          <li>Brainstroming</li>
+          <li>Connecting the dots</li>
+        </ul>
+      </div>
+ 
+      <div class="step-tooltip"></div>
+    </div>
+ 
+ 
+    <!-- ====================================================
+      STEP 3 — Ideate & Develop
+      Shape: V-notch-left, pointed-right
+      [Replace data-bg-img with your real image path]
+    ==================================================== -->
+    <div class="process-step" style="--i:2"
+         data-bg-img="../skill-img/me-singha-bizcourse.jpg">
+ 
+      <div class="step-bg"></div>
+      <div class="step-overlay"></div>
+ 
+      <div class="step-content">
+        <div class="step-num">3</div>
+        <h4>Prototype</h4>
+        <p class="step-sub">Decesion-making Phrase</p>
+        <ul>
+          <li>Prioritize</li>
+          <li>Visual Presentation</li>
+          <li>Mockups</li>
+        </ul>
+      </div>
+ 
+      <div class="step-tooltip"></div>
+    </div>
+ 
+ 
+    <!-- ====================================================
+      STEP 4 — Deliver & Pitch
+      Shape: V-notch-left, flat-right (end of chain)
+      [Replace data-bg-img with your real image path]
+    ==================================================== -->
+    <div class="process-step" style="--i:3"
+         data-bg-img="../skill-img/me-present.jpg">
+ 
+      <div class="step-bg"></div>
+      <div class="step-overlay"></div>
+ 
+      <div class="step-content">
+        <div class="step-num">4</div>
+        <h4>Deliver</h4>
+        <p class="step-sub">Presentation phrase</p>
+        <ul>
+          <li>Understand Audience</li>
+          <li>Presentation Skills (English)</li>
+          <li>Feedback loop</li>
+        </ul>
+      </div>
+ 
+      <div class="step-tooltip"></div>
+    </div>
+ 
+  </div>
+</section>
+<!-- ============================================================
+  END: SKILLS PAGE — DESIGN THINKING PROCESS FLOW
+============================================================ -->
+<!-- ============================================================
+  START: SKILLS PAGE — WHAT I CAN DO
+  "Two large cards: Research & Presentation, Business Understanding."
+============================================================ -->
+<section class="skills-what scroll-reveal">
+  <div class="section-label">Skill Areas</div>
+  <h2 class="section-title">What I Can Do</h2>
+
+  <div class="skills-cards">
+
+    <div class="skill-card-big">
+      <div class="skill-img-placeholder">
+        <img src="../skill-img/play.jpg" alt="Research and Presentation">
+      </div>
+      <h3>Research &amp; Presentation</h3>
+      <ul>
+        <li>Primary/Secondary research</li>
+        <li>Data analyses with critical thinking</li>
+        <li>Stakeholder coordinations</li>
+        <li>Document writing in English</li>
+        <li>Presentation skill in English</li>
+      </ul>
+    </div>
+
+    <div class="skill-card-big">
+      <div class="skill-img-placeholder">
+        <img src="../skill-img/play.jpg" alt="Business Understanding">
+      </div>
+      <h3>Business Understanding</h3>
+      <ul>
+        <li>Business modeling</li>
+        <li>Business pitching</li>
+        <li>Financial Report analyses</li>
+        <li>Internal and External Analyses</li>
+        <li>Sustainable development principles</li>
+      </ul>
+    </div>
+
+  </div>
+</section>
+<!-- ============================================================
+  END: SKILLS PAGE — WHAT I CAN DO
+============================================================ -->
+<!-- ============================================================
+  START: SKILLS PAGE — SOFT SKILLS
+  "6-card grid of human / interpersonal skills with emoji icons."
+============================================================ -->
+<section class="soft-skills-section scroll-reveal">
+  <div class="section-label"></div>
+  <h2 class="section-title">Soft Skills</h2>
+
+  <div class="soft-grid">
+    
+    <div class="soft-card">
+      <div class="soft-icon"><img src="../skill-img/timemng.png" alt="Icon"></div>
+      <h4>Time Management</h4>
+      <p>Prioritize tasks and always mange myself to be on time</p>
+    </div>
+    
+    <div class="soft-card">
+      <div class="soft-icon"><img src="../skill-img/adaptability.jpg" alt="Icon"></div>
+      <h4>Adaptability</h4>
+      <p>Operational Flexibility. Being open to new idea, easily shift when circumstance changes</p>
+    </div>
+    
+    <div class="soft-card">
+      <div class="soft-icon"><img src="../skill-img/emotional.jpg" alt="Icon"></div>
+      <h4>Emotional Intelligence</h4>
+      <p>Understanding my own and others' emotions during situations.</p>
+    </div>
+    
+    <div class="soft-card">
+      <div class="soft-icon"><img src="../skill-img/teamwork.jpg" alt="Icon"></div>
+      <h4>Team Working</h4>
+      <p>Everyone has unique strengths from different backgrounds, collaboration for shared goals</p>
+    </div>
+    
+    <div class="soft-card">
+      <div class="soft-icon"><img src="../skill-img/self-leadership.png" alt="Icon"></div>
+      <h4>Self-leadership</h4>
+      <p>Control my own thinking, feelings, and actions to achieve objectives</p>
+    </div>
+  </div>
+
+</section>
+<!-- ============================================================
+  END: SKILLS PAGE — SOFT SKILLS
+============================================================ -->
+</div><!-- END #page-skills -->
+
+<!-- PAGE: HOBBY -->
+<div id="page-hobby" class="spa-page">
+<section class="hobby-hero scroll-reveal">
+  
+  <div class="hobby-hero-bg">
+    <img src="../hobby-img/DSC_1521.JPG" alt="Three Whales Rock" class="hobby-bg-img">
+    <div class="hobby-overlay"></div>
+  </div>
+
+  <div class="hobby-hero-text">
+    <h1>I am a Sport<br><span class="name-accent">Enthusiast.</span><br>Also love to travel !</h1>
+  </div>
+
+  <p class="hobby-caption">Taken by Nikon D90 | Three Whales Rock | Buengkarn</p>
+
+</section>
+<!-- ============================================================
+  START: HOBBY PAGE — ACTIVITIES GRID
+  "Three hobby cards: Running (with marathon times), Cycling,
+   Travel & Photography."
+============================================================ -->
+<section class="hobby-activities scroll-reveal">
+  <div class="section-label">Free Time</div>
+  <h2 class="section-title">During my free time<br>things I love to do…</h2>
+
+  <div class="hobby-grid">
+
+    <div class="hobby-card running">
+      <div class="hobby-card-img">
+        <img src="../hobby-img/run-bg.jpg" alt="Running">
+      </div>
+      <div class="hobby-card-info">
+        <h4>Running</h4>
+        <ul>
+          <li>Bangkok Half Marathon: <strong>2 hrs 17 min</strong></li>
+          <li>Nakorn Nayok Full Marathon: <strong>4 hrs 40 min</strong></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="hobby-card cycling">
+      <div class="hobby-card-img">
+        <img src="../hobby-img/biking-bg.jpg" alt="Cycling">
+      </div>
+      <div class="hobby-card-info">
+        <h4>Cycling</h4>
+        <p>Love road biking</p>
+      </div>
+    </div>
+
+    <div class="hobby-card travel">
+      <div class="hobby-card-img">
+        <img src="../hobby-img/DSC_0542.JPG" alt="Travel and Photography">
+      </div>
+      <div class="hobby-card-info">
+        <h4>Traveling</h4>
+        <p>Love nature traveling and trying local food</p>
+      </div>
+    </div>
+
+  </div>
+
+  </div>
+</section>
+<!-- ============================================================
+  END: HOBBY PAGE — ACTIVITIES GRID
+============================================================ -->
+<!-- ============================================================
+  START: HOBBY PAGE — QUOTE SECTION
+  "Photo slot + large italic personal quote side by side."
+============================================================ -->
+<section class="quote-section scroll-reveal">
+  <div class="quote-layout">
+    
+    <div class="quote-img-wrap">
+      <img src="../hobby-img/runtrack.jpg" alt="Track Photo">
+    </div>
+
+    <blockquote class="hero-quote">
+      <p>"Sports teaches me with self-discipline, consisteny, and fighting spirit"</p>
+      <cite>— Ratchaphruek Srisuphachoke</cite>
+    </blockquote>
+
+  </div>
+</section>
+<!-- ============================================================
+  END: HOBBY PAGE — QUOTE SECTION
+============================================================ -->
+</div><!-- END #page-hobby -->
+
+<!-- PAGE: CONTACT -->
+<div id="page-contact" class="spa-page">
+<!-- ============================================================
+  START: CONTACT PAGE — PAGE HERO
+  "Centred title: Let's Talk + Feel Free to Contact Me."
+============================================================ -->
+<div class="contact-hero scroll-reveal">
+  <div class="section-label">Let's Talk</div>
+  <h1 class="page-title">Feel Free to<br><span class="name-accent">Contact Me</span></h1>
+</div>
+<!-- ============================================================
+  END: CONTACT PAGE — PAGE HERO
+============================================================ -->
+</div><!-- END #page-contact -->
+
+
+<!-- ============================================================
+  GLOBAL FOOTER — single instance, always visible across all pages
+============================================================ -->
+<footer class="page-footer">
+  <div class="resume-shake-wrap">
+    <button class="btn-resume shake-btn">View my Resume</button>
+  </div>
+  <div class="footer-contact">
+    <p>Tel: 061 540 6041</p>
+        <p>Line ID: tonkooonkub12</p>
+    <p>Tel: 061 540 6041</p>
+    <p>WhatsApp: +66 61 540 6041</p>
+  </div>
+  <div class="footer-social">
+    
+    <a href="https://www.facebook.com/ratchaphruk.srisuphachoke?locale=th_TH" class="social-icon" aria-label="Facebook">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path>
+      </svg>
+    </a>
+
+    <a href="https://www.instagram.com/rrathchappuk/?hl=en" class="social-icon" aria-label="Instagram">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+        <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+        <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+      </svg>
+    </a>
+
+    <a href="https://www.linkedin.com/in/ratchaphruek-srisuphachoke-5a8537277/" class="social-icon" aria-label="LinkedIn">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path>
+        <rect x="2" y="9" width="4" height="12"></rect>
+        <circle cx="4" cy="4" r="2"></circle>
+      </svg>
+    </a>
+
+  </div>
+</footer>
+
+<script>
+/* ============================================================
+  MASTER JAVASCRIPT
+  1. Theme (init + toggle)
+  2. showPage() — SPA router
+  3. Mobile menu
+  4. Navbar shadow
+  5. Hero (slideshow, badge, parallax)
+  6. Projects accordion
+  7. Awards accordion
+  8. Intern overlay
+  9. Process steps
+  10. Soft skills stagger
+  11. Hobby activities stagger
+  12. Extracurricular (stagger + tooltip)
+  13. initScrollReveal() — central observer
+============================================================ */
+
+/* 1. THEME
+   Default: light. toggleTheme() sets data-theme on <html>.
+   All CSS vars cascade down to every section. */
+(function initTheme() {
+  const saved = localStorage.getItem('portfolio-theme') || 'light';
+  document.documentElement.setAttribute('data-theme', saved);
+})();
+
+function toggleTheme() {
+  const html = document.documentElement;
+  const next = html.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+  html.setAttribute('data-theme', next);
+  localStorage.setItem('portfolio-theme', next);
+}
+
+/* 2. SPA ROUTER
+   showPage(pageId):
+     - 200ms fade-out of current page
+     - 350ms fade-in of incoming page
+     - instant scrollTo(top)
+     - sync .active on nav links
+     - initScrollReveal() on new page (were display:none before)
+     - initProcessSteps() when entering Skills */
+let currentPage = 'main';
+
+function showPage(pageId) {
+  if (pageId === currentPage) return;
+  const out = document.getElementById('page-' + currentPage);
+  const inn = document.getElementById('page-' + pageId);
+  if (!inn) return;
+
+  if (out) {
+    out.style.transition = 'opacity 0.2s ease';
+    out.style.opacity = '0';
+    setTimeout(() => { out.classList.remove('spa-active'); out.style.opacity = ''; out.style.transition = ''; }, 200);
+  }
+
+  setTimeout(() => {
+    inn.classList.add('spa-active');
+    inn.style.opacity = '0'; inn.style.transition = 'none';
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      inn.style.transition = 'opacity 0.35s ease';
+      inn.style.opacity = '1';
+      setTimeout(() => { inn.style.opacity = ''; inn.style.transition = ''; }, 380);
+    }));
+    window.scrollTo({ top: 0, behavior: 'instant' });
+    currentPage = pageId;
+
+    document.querySelectorAll('.nav-link, .mobile-menu-link').forEach(link => {
+      link.classList.toggle('active', link.getAttribute('data-page') === pageId);
+    });
+
+    setTimeout(() => {
+      initScrollReveal(inn);
+      if (pageId === 'skills') initProcessSteps();
+    }, 60);
+  }, out ? 180 : 0);
+}
+
+/* 3. MOBILE MENU */
+function toggleMobileMenu() { const m = document.getElementById('mobile-menu'); if(m) m.classList.toggle('open'); }
+function closeMobileMenu()  { const m = document.getElementById('mobile-menu'); if(m) m.classList.remove('open'); }
+
+/* 4. NAVBAR SCROLL SHADOW */
+window.addEventListener('scroll', () => {
+  const nav = document.getElementById('navbar');
+  if (nav) nav.style.boxShadow = window.scrollY > 60 ? '0 2px 20px rgba(0,0,0,0.08)' : 'none';
+});
+
+/* 5. HERO */
+/* ============================================================
+  SCRIPTS FOR: index-mainpage-hero.html
+  "Theme persistence, TH/EN badge toggle, hero photo slideshow
+   (rotates every 3 s), and parallax scroll on the photo column."
+============================================================ */
+
+/* --- Auto-apply saved theme --- */
+
+
+/* --- TH/EN badge toggle --- */
+const badge = document.querySelector('.hero-badge');
+if (badge) {
+  badge.addEventListener('click', () => {
+    badge.textContent = badge.textContent.trim().startsWith('TH') ? 'EN / TH' : 'TH / EN';
+  });
+}
+
+/* --- Hero photo slideshow (rotates every 3 seconds) --- */
+function startHeroSlideshow() {
+  const img = document.getElementById('hero-slide-img');
+  if (!img) return;
+  const slides = (img.getAttribute('data-slides') || '')
+    .split('|').map(s => s.trim()).filter(Boolean);
+  if (slides.length < 2) return;
+  let current = 0;
+  setInterval(() => {
+    current = (current + 1) % slides.length;
+    img.style.opacity = '0';
+    setTimeout(() => { img.src = slides[current]; img.style.opacity = '1'; }, 500);
+  }, 3000);
+}
+startHeroSlideshow();
+
+/* --- Parallax: photo column drifts up slightly on scroll --- */
+window.addEventListener('scroll', () => {
+  const wrap = document.querySelector('.hero-img-wrap');
+  if (wrap) wrap.style.transform = `translateY(${window.scrollY * 0.05}px)`;
+});
+window.addEventListener('scroll', () => {
+  if (currentPage !== 'main') return;
+  const wrap = document.querySelector('.hero-img-wrap');
+  if (wrap) wrap.style.transform = 'translateY(' + (window.scrollY * 0.05) + 'px)';
+});
+
+/* 6. PROJECTS ACCORDION */
+/* ============================================================
+  SCRIPTS FOR: index-mainpage-projects.html
+
+  [Three responsibilities]
+  1. Scroll-reveal  — fade section in on first viewport entry
+  2. Accordion      — mouseenter expands hovered card;
+                      mouseleave on the row restores card 01
+  3. Click handler  — clicking an active card opens data-url
+                      in a new browser tab
+============================================================ */
+
+/* ── 1. Scroll-reveal observer ──────────────────────────── */
+/* [IntersectionObserver fires once when section enters view] */
+/* scroll-reveal handled by master initScrollReveal() */
+
+
+/* ── 2. Accordion hover interaction ─────────────────────── */
+
+/* [Cache the row and all cards] */
+const row      = document.getElementById('accordionRow');
+const cards    = Array.from(row.querySelectorAll('.project-card'));
+const card01   = cards[0]; /* default active card */
+
+/* [setActive: add .active to one card, remove from all others] */
+function setActive(target) {
+  cards.forEach(c => c.classList.toggle('active', c === target));
+}
+
+/* [mouseenter on any card — expand that card] */
+cards.forEach(card => {
+  card.addEventListener('mouseenter', () => setActive(card));
+});
+
+/* [mouseleave on the ROW — restore card 01 as default]
+   Using the row's mouseleave avoids flickering when the cursor
+   moves from one card to the next (no gap between cards). */
+row.addEventListener('mouseleave', () => setActive(card01));
+
+
+/* ── 3. Click → open project URL in new tab ─────────────── */
+/* [Only the active (expanded) card is clickable for navigation.
+   The .card-link anchor also handles its own click independently
+   via stopPropagation so it doesn't double-fire.] */
+cards.forEach(card => {
+  card.addEventListener('click', () => {
+    const url = card.getAttribute('data-url');
+    if (url && url !== '#') {
+      window.open(url, '_blank', 'noopener,noreferrer');
+    }
+  });
+});
+/* 7. AWARDS ACCORDION */
+/* ============================================================
+  SCRIPTS FOR: index-mainpage-awards.html
+
+  [Three responsibilities]
+  1. Scroll-reveal  — fade section in on first viewport entry
+  2. Accordion      — mouseenter expands the hovered card;
+                      mouseleave on the full row restores card 01
+  3. Click handler  — clicking any active card opens its
+                      data-url in a new browser tab
+============================================================ */
+
+/* ── 1. Scroll-reveal observer ─────────────────────────────
+   [Fires once when .scroll-reveal enters the viewport.
+    Adds .revealed → CSS transitions opacity + translateY to 0.] */
+/* scroll-reveal handled by master initScrollReveal() */
+
+
+/* ── 2. Accordion hover interaction ────────────────────────
+   [Cache DOM references once] */
+const awardsRow   = document.getElementById('awardsRow');
+const awardCards  = Array.from(awardsRow.querySelectorAll('.award-card'));
+const defaultCard = awardCards[0]; /* [Card 01 is the persistent default] */
+
+/* [setActive: toggles .active class — one card on, all others off] */
+function setActiveAward(target) {
+  awardCards.forEach(card =>
+    card.classList.toggle('active', card === target)
+  );
+}
+
+/* [mouseenter on any card expands it immediately] */
+awardCards.forEach(card => {
+  card.addEventListener('mouseenter', () => setActiveAward(card));
+});
+
+/* [mouseleave on the ROW (not individual cards) restores card 01.
+    Listening at row level prevents flickering when the cursor
+    moves directly from one card to the next with no gap.] */
+awardsRow.addEventListener('mouseleave', () => setActiveAward(defaultCard));
+
+
+/* ── 3. Click → open award link in new tab ─────────────────
+   [Clicking the card body opens data-url in a new tab.
+    Works on any card — active or not — so quick-clicks work.] */
+awardCards.forEach(card => {
+  card.addEventListener('click', () => {
+    const url = card.getAttribute('data-url');
+    if (url && url !== '#') {
+      window.open(url, '_blank', 'noopener,noreferrer');
+    }
+  });
+});
+/* 8. INTERN OVERLAY */
+/* ============================================================
+  SCRIPTS FOR: index-mainpage-intern.html
+  "Theme persistence, scroll-reveal, click-toggle overlay on
+   mobile where CSS :hover is unavailable."
+============================================================ */
+
+
+/* Click toggles overlay (useful on touch screens) */
+/*document.querySelectorAll('.intern-card').forEach(card => {
+  card.addEventListener('click', () => {
+    const overlay = card.querySelector('.intern-hover-overlay');
+    if (overlay) overlay.style.opacity = overlay.style.opacity === '1' ? '' : '1';
+  });
+});
+
+/* Scroll-reveal */
+/* 9. PROCESS STEPS
+   Wrapped in initProcessSteps() so it can be re-called every time
+   the Skills page is navigated to (elements were hidden before). */
+function initProcessSteps() {
+  /* Inject data-bg-img as background-image on each .step-bg */
+  document.querySelectorAll('.process-step').forEach(step => {
+    const imgPath = step.getAttribute('data-bg-img');
+    const bgEl    = step.querySelector('.step-bg');
+    if (imgPath && bgEl && !bgEl.style.backgroundImage) {
+      bgEl.style.backgroundImage = "url('" + imgPath + "')";
+    }
+  });
+
+  /* Staggered reveal: observe steps not yet visible */
+  const stepObs = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const el    = entry.target;
+        const index = parseFloat(el.style.getPropertyValue('--i') || 0);
+        const delay = index * 0.12;
+        el.style.transition = 'opacity 0.5s ease ' + delay + 's, transform 0.5s ease ' + delay + 's, filter 0.35s ease';
+        el.style.opacity   = '1';
+        el.style.transform = 'translateY(0)';
+        stepObs.unobserve(el);
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.process-step').forEach(step => {
+    /* Only re-observe if not yet revealed */
+    if (step.style.opacity !== '1') {
+      stepObs.observe(step);
+    }
+  });
+}
+
+/* 10. SOFT SKILLS STAGGER */
+/* ============================================================
+  SCRIPTS FOR: index-skillpage-softskills.html
+  "Theme persistence, card stagger delays, scroll-reveal."
+============================================================ */
+
+
+document.querySelectorAll('.soft-grid > *').forEach((card, i) => {
+  card.style.transitionDelay = `${i * 0.05}s`;
+});
+/* 11. HOBBY ACTIVITIES STAGGER */
+document.querySelectorAll('.hobby-grid > *').forEach((card, i) => { card.style.transitionDelay = `${i * 0.05}s`; });
+/* 12. EXTRACURRICULAR — stagger + tooltip */
+/* ============================================================
+  SCRIPTS FOR: index-mainpage-extracurricular.html
+============================================================ */
+
+
+document.querySelectorAll('.timeline-item').forEach((item, i) => {
+  item.style.transitionDelay = `${i * 0.08}s`;
+});
+
+
+
+/* ============================================================
+  FLOATING TOOLTIP LOGIC
+============================================================ */
+const ttBox      = document.getElementById('ttBox');
+const ttImgWrap  = document.getElementById('ttImgWrap');
+const ttCategory = document.getElementById('ttCategory');
+const ttTitle    = document.getElementById('ttTitle');
+const ttDesc     = document.getElementById('ttDesc');
+const ttDate     = document.getElementById('ttDate');
+
+const TT_OFFSET_X = 16;
+const TT_OFFSET_Y = 12;
+const TT_W = 300;
+
+function populateTooltip(el) {
+  const vid   = el.getAttribute('data-tt-vid')   || '';
+  const img   = el.getAttribute('data-tt-img')   || '';
+  const cat   = el.getAttribute('data-tt-cat')   || '';
+  const title = el.getAttribute('data-tt-title') || '';
+  const desc  = el.getAttribute('data-tt-desc')  || '';
+  const date  = el.getAttribute('data-tt-date')  || '';
+  const icon  = el.getAttribute('data-tt-icon')  || '📌';
+
+  /* [Video Support] */
+  if (vid) {
+    ttImgWrap.innerHTML =
+      `<video src="${vid}" autoplay loop playsinline
+            style="width:100%;height:100%;object-fit:cover;object-position:center;display:block;"></video>`;
+  } 
+  /* [Image Support] */
+  else if (img) {
+    ttImgWrap.innerHTML =
+      `<img src="${img}" alt="${title}" loading="lazy"
+            style="width:100%;height:100%;object-fit:cover;object-position:center;display:block;">`;
+  } 
+  /* [Fallback] */
+  else {
+    ttImgWrap.innerHTML =
+      `<div class="tt-img-placeholder">${icon}</div>`;
+  }
+
+  ttCategory.textContent = cat;
+  ttTitle.textContent    = title;
+  ttDesc.textContent     = desc;
+  ttDate.textContent     = date;
+}
+
+function positionTooltip(cx, cy) {
+  const vw = window.innerWidth;
+  const vh = window.innerHeight;
+  const th = ttBox.offsetHeight || 240; 
+
+  let left = cx + TT_OFFSET_X;
+  let top  = cy + TT_OFFSET_Y;
+
+  if (left + TT_W > vw - 8) {
+    left = cx - TT_W - TT_OFFSET_X;
+  }
+  if (top + th > vh - 8) {
+    top = cy - th - TT_OFFSET_Y;
+  }
+
+  left = Math.max(8, left);
+  top  = Math.max(8, top);
+
+  ttBox.style.left = `${left}px`;
+  ttBox.style.top  = `${top}px`;
+}
+
+const hoverTargets = document.querySelectorAll(
+  '.club-circle[data-tt-title], .timeline-item[data-tt-title]'
+);
+
+hoverTargets.forEach(el => {
+  el.addEventListener('mouseenter', e => {
+    populateTooltip(el);
+    positionTooltip(e.clientX, e.clientY);
+    ttBox.classList.add('visible');
+  });
+
+  el.addEventListener('mousemove', e => {
+    positionTooltip(e.clientX, e.clientY);
+  });
+
+  el.addEventListener('mouseleave', () => {
+    ttBox.classList.remove('visible');
+  });
+});
+
+/* 13. SCROLL-REVEAL (central)
+   initScrollReveal(container): IntersectionObserver on all
+   .scroll-reveal:not(.revealed) inside container.
+   80ms per-element stagger. Re-runs on every page navigation. */
+function initScrollReveal(container) {
+  const els = (container || document).querySelectorAll('.scroll-reveal:not(.revealed)');
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach((entry, idx) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => entry.target.classList.add('revealed'), idx * 80);
+        obs.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
+  els.forEach(el => obs.observe(el));
+}
+
+/* INIT — home page on first load */
+document.addEventListener('DOMContentLoaded', () => {
+  initScrollReveal(document.getElementById('page-main'));
+
+  document.querySelectorAll('.timeline-item').forEach((item, i) => {
+    item.style.transitionDelay = (i * 0.08) + 's';
+  });
+  document.querySelectorAll('.soft-grid > *').forEach((c, i) => {
+    c.style.transitionDelay = (i * 0.05) + 's';
+  });
+  document.querySelectorAll('.hobby-grid > *').forEach((c, i) => {
+    c.style.transitionDelay = (i * 0.05) + 's';
+  });
+});
+</script>
+</body>
+</html>

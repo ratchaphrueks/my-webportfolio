@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ratchaphruek Srisuphachoke — Portfolio</title>
+
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,300&display=swap" rel="stylesheet">
+
+<!-- Stylesheet -->
+<link rel="stylesheet" href="styles.css">
+
+<!-- ============================================================
+  Google Analytics 4 (GA4)
+  Tracking ID: G-B4L2MTVJ4L
+  Virtual pageviews for SPA navigation are pushed inside
+  showPage() in scripts.js via gtag('config', ..., {page_path}).
+============================================================ -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-B4L2MTVJ4L"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-B4L2MTVJ4L');
+</script>
+
+<!-- ============================================================
+  Hotjar / Contentsquare
+  Replace YOUR_HOTJAR_ID with the actual Hotjar Site ID.
+  SPA stateChange calls are pushed inside showPage() in
+  scripts.js via hj('stateChange', '/pageId').
+============================================================ -->
+<script>
+    (function(h,o,t,j,a,r){
+        h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};
+        /* Replace YOUR_HOTJAR_ID below with your actual Hotjar Site ID number */
+        h._hjSettings={hjid:YOUR_HOTJAR_ID,hjsv:6};
+        a=o.getElementsByTagName('head')[0];
+        r=o.createElement('script');r.async=1;
+        r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;
+        a.appendChild(r);
+    })(window,document,'https://static.hotjar.com/c/hotjar-','.js?sv=');
+</script>
+
+<!-- Contentsquare -->
+<script src="https://t.contentsquare.net/uxa/449bac805b5ea.js"></script>
+
+</head>
+<body>
+
+<!-- ============================================================
+  FLOATING TOOLTIP
+  Used by mainpage-extracurricular clubs & timeline items.
+  Populated and positioned via scripts.js populateTooltip().
+============================================================ -->
+<div class="tt-box" id="ttBox" role="tooltip" aria-hidden="true">
+  <div class="tt-img-wrap" id="ttImgWrap"></div>
+  <div class="tt-body">
+    <span class="tt-category" id="ttCategory"></span>
+    <span class="tt-title"    id="ttTitle"></span>
+    <span class="tt-desc"     id="ttDesc"></span>
+    <span class="tt-date"     id="ttDate"></span>
+  </div>
+</div>
+
+<!-- ============================================================
+  shared-navbar
+============================================================ -->
+<nav id="navbar">
+  <div class="nav-logo" onclick="showPage('main')">
+    <img src="./main-img/avatar-removebg.png" alt="Avatar">
+    <span class="logo-text">Ratchaphruek</span>
+  </div>
+  <div class="nav-links">
+    <a href="#" class="nav-link active" data-page="main" onclick="showPage('main');return false;">Home</a>
+    <a href="#" class="nav-link"        data-page="skills" onclick="showPage('skills');return false;">Skills</a>
+    <a href="#" class="nav-link"        data-page="hobby" onclick="showPage('hobby');return false;">Hobby</a>
+  </div>
+  <div class="nav-right">
+    <div class="mobile-menu-trigger" onclick="toggleMobileMenu()">
+      <span class="menu-text-label">MENU</span>
+      <button class="hamburger" aria-label="Open menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+    <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme">
+      <span class="theme-icon light-icon">&#9728;&#65039;</span>
+      <span class="theme-icon dark-icon">&#127769;</span>
+    </button>
+    <button class="btn-contact shake-btn" onclick="showPage('contact')">Contact Me</button>
+  </div>
+</nav>
+
+<!-- shared-navbar — mobile dropdown -->
+<div class="mobile-menu" id="mobile-menu">
+  <a href="#" class="mobile-menu-link active" data-page="main"   onclick="showPage('main');closeMobileMenu();return false;">Home</a>
+  <a href="#" class="mobile-menu-link"        data-page="skills" onclick="showPage('skills');closeMobileMenu();return false;">Skills</a>
+  <a href="#" class="mobile-menu-link"        data-page="hobby"  onclick="showPage('hobby');closeMobileMenu();return false;">Hobby</a>
+  <a href="#" class="mobile-menu-link" data-page="contact" onclick="showPage('contact');closeMobileMenu();return false;">Contact</a>
+</div>
+
+<!-- ============================================================
+  PAGE: HOME (id="page-main")
+  Sections: hero · education · projects · awards · intern ·
+            extracurricular
+============================================================ -->
+<div id="page-main" class="spa-page spa-active">
+
+<!-- mainpage-hero -->
+<section class="hero">
+  <div class="hero-bg-grid"></div>
+  <div class="hero-content">
+    <h1 class="hero-name animate-in" style="--d:0.2s">
+      Ratchaphruek<br><span class="name-accent">Srisuphachoke</span>
+    </h1>
+    <p class="hero-bio animate-in" style="--d:0.35s">
+      A Junior year student at <strong>Thammasat University</strong>, School of Global Studies, major in
+      <strong>Social Entrepreneurship</strong>. Aspiring to build strengths through hands-on
+      professional work experience in<br>
+      <span class="highlight-text">Sales / Digital Marketing / BD / ESG.</span>
+    </p>
+    <div class="hero-cta animate-in" style="--d:0.5s">
+      <button class="btn-primary" onclick="document.querySelector('.intern-section').scrollIntoView({behavior: 'smooth'})">View My Experiences</button>
+      <button class="btn-outline" onclick="showPage('contact')">Contact Me</button>
+    </div>
+  </div>
+  <div class="hero-img-wrap animate-in" style="--d:0.3s">
+    <div class="hero-img-placeholder">
+      <div class="placeholder-person">
+        <img id="hero-slide-img" src="../main-img/TK-hero-shadow.png" data-slides="../main-img/TK-hero-shadow.png|/Claude AI portfolio/static/img/MeAvatar.jpg|../main-img/TK-shadow2.png" alt="Ratchaphruek Profile image" style="transition:opacity 0.5s ease;">
+      </div>
+    </div>
+    <div class="hero-decoration"></div>
+  </div>
+</section>
+
+<!-- mainpage-education -->
+<section class="education-section scroll-reveal">
+  <div class="section-label"></div>
+  <div class="edu-grid">
+    <div class="edu-text">
+      <h2 class="section-title">My Education</h2>
+      <h3 class="edu-degree">Bachelor of Arts in Global Studies and Social Entrepreneurship <span class="gsse-tag">(GSSE)</span></h3>
+      <ul class="edu-list">
+        <li>Active project-based learning.</li>
+        <li>Design Thinking &rarr; Research &rarr; Analysis &rarr; Presentation.</li>
+        <li>Multidisciplinary studies: Society, Sustainability(SDGs, ESG),<br> Business &amp; Finance, and digital Marketing.</li>
+      </ul>
+      <div class="edu-actions">
+        <button class="btn-primary" onclick="window.open('https://drive.google.com/file/d/1PdVUsrhBCG_tpT6qlhuU50nxfn707w-a/view?usp=sharing')">View My Transcript</button>
+        <div class="gpax-badge">GPAX 3.64</div>
+      </div>
+    </div>
+    <div class="edu-logo-wrap">
+      <div class="edu-logo-placeholder">
+        <div class="placeholder-label"><img src="./main-img/sgs_logo.png" width="300px" alt="SGS Logo"></div>
+        <p></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- mainpage-intern -->
+<section class="intern-section scroll-reveal">
+  <div class="section-label">Work</div>
+  <h2 class="section-title">Intern Experiences</h2>
+  <div class="intern-grid">
+    <div class="intern-card" data-company="Happy Ground" data-period="Sep 2024 – Apr 2025" data-role="Research Assistant (Remote)">
+      <div class="intern-logo-placeholder"><img src="../main-img/logo-happyground.png" alt="Happy Ground Logo" style="width: 100%; height: 100%; object-fit: contain; padding: 0.5px;"></div>
+      <div class="intern-info">
+        <div class="intern-header">
+          <div><h4>HAPPY GROUND CARBON Co., Ltd</h4><span class="intern-role">Research Assistant (Remote)</span></div><span class="intern-period">Sep 2024 – Apr 2025</span>
+        </div>
+        <ul>
+          <li>Conducted comprehensive market &amp; Thai Agri landscape research across main economic crops.</li>
+          <li>Primary research 30+ farmers interviewed on-site &amp; on-call, Secondary document reviews.</li>
+          <li>Synthesized complex findings into visual slide decks and present to supervisor in English.</li>
+        </ul>
+      </div>
+      <a href="https://www.linkedin.com/company/happy-ground/" target="_blank" rel="noopener noreferrer" class="intern-hover-overlay" style="background-image: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('../main-img/bg-happyground.jpg'); background-size: cover; background-position: center; text-decoration: none;">
+        <div class="placeholder-label">&#9655; Click to see company profile</div><p>Biochar climate-tech start-up | Scope3 supply chain corbon mitigation</p>
+      </a>
+    </div>
+    <div class="intern-card" data-company="Choen Ter" data-period="Jun 2024 – Aug 2024" data-role="Operations Intern">
+      <div class="intern-logo-placeholder"><img src="../main-img/choenter-logo.png" alt="Choen Ter Logo" style="width: 100%; height: 100%; object-fit: contain; padding: 0px;"></div>
+      <div class="intern-info">
+        <div class="intern-header">
+          <div><h4>Choen Ter International Trade Co., Ltd</h4><span class="intern-role">Operations Intern</span></div><span class="intern-period">Jun 2024 – Aug 2024</span>
+        </div>
+        <ul>
+          <li>Assisted general administrative tasks for order management &amp; packing logistics.</li>
+          <li>Spreadsheet order management using VLOOKUP, conditional formatting &amp; Filter for inventory tracking.</li>
+          <li>Assisted on-site communications in English with Taiwanese live streamers</li>
+        </ul>
+      </div>
+      <a href="https://www.choenter.com/" target="_blank" rel="noopener noreferrer" class="intern-hover-overlay" style="background-image: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('YOUR_BG_IMAGE.jpg'); background-size: cover; background-position: center; text-decoration: none;">
+        <div class="placeholder-label">&#9655; Click to see company profile</div><p>China &amp; Taiwan export facilitator</p>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- mainpage-awards -->
+<section class="awards-section scroll-reveal">
+  <span class="section-label">Recognition</span>
+  <h2 class="section-title">Awards</h2>
+  <div class="awards-accordion" id="awardsRow">
+    <div class="award-card active" data-url="https://drive.google.com/file/d/1kKnGhL_7V2qPAZZqnUvpbQRJ3AyPmBFR/view?usp=sharing">
+      <div class="card-collapsed">
+        <span class="c-icon-idle">Thammasat Startup Contest 2024</span><span class="c-year-idle">16 March 2024</span><span class="c-title-vertical">Team Fliery</span>
+      </div>
+      <div class="card-expanded">
+        <div class="award-thumb"><img src="../main-img/TU-start-up-win.jpg" alt="Thammasat Startup Contest 2024" style="width:100%;height:100%;object-fit:cover;object-position:center;border-radius:var(--radius-sm);"></div>
+        <div class="award-body"><span class="award-tag">16 March 2024</span><span class="award-badge-pill">1st Runner Up</span><span class="award-title">Thammasat Startup Contest</span><p class="award-desc">Secured 2nd Place Award, outperforming 50+ competing teams. Team Leader for sustainable business idea <strong>&ldquo;Fliery&rdquo;</strong>.</p></div>
+      </div>
+    </div>
+    <div class="award-card" data-url="https://devpost.com/software/ecowiz-ysh0ax">
+      <div class="card-collapsed">
+        <span class="c-icon-idle">International Hackaton</span><span class="c-year-idle">21-24 February 2025</span><span class="c-title-vertical">Climate Change-Makers</span>
+      </div>
+      <div class="card-expanded">
+        <div class="award-thumb"><img src="./main-img/Ecowizwin.png" alt="Climate Change-Makers" style="width:100%;height:100%;object-fit:cover;object-position:center;border-radius:var(--radius-sm);"></div>
+        <div class="award-body"><span class="award-tag">21-24 February 2025</span><span class="award-badge-pill">Best of the Rest</span><span class="award-title">Climate Change-Makers Challenge</span><p class="award-desc">Proposing an idea E-waste recycling app <strong>&ldquo;Ecowiz&rdquo;</strong>.</p></div>
+      </div>
+    </div>
+    <div class="award-card" data-url="https://example.com/deans-list">
+      <div class="card-collapsed">
+        <span class="c-icon-idle">School of Global Study</span><span class="c-year-idle">2024</span><span class="c-title-vertical">Dean&rsquo;s List Award</span>
+      </div>
+      <div class="card-expanded">
+        <div class="award-thumb"><img src="placeholder.jpg" alt="Dean's List Award" style="width:100%;height:100%;object-fit:cover;object-position:center;border-radius:var(--radius-sm);"></div>
+        <div class="award-body"><span class="award-tag">First Year</span><span class="award-badge-pill">Academic Excellency</span><span class="award-title">Dean&rsquo;s List Award</span><p class="award-desc">Academic Excellency recognition for outstanding academic grading performance.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- mainpage-projects -->
+<section class="projects-section scroll-reveal">
+  <span class="section-label">Academic Work</span>
+  <h2 class="section-title">Selected School Projects</h2>
+  <div class="projects-accordion" id="accordionRow">
+    <div class="project-card active" data-url="https://drive.google.com/file/d/17wo1Z8KmKxfuazFzB-P8SjAQDlQJ69sp/view?usp=sharing" data-num="01">
+      <span class="c-num-corner">01</span>
+      <div class="card-collapsed">
+        <span class="c-num-idle">01</span><span class="c-title-vertical">Team Research Project</span>
+      </div>
+      <div class="card-expanded">
+        <div class="proj-thumb"><img src="./main-img/researchproject.png" alt="Project 01" style="width: 100%; height: 100%; object-fit: cover; border-radius: var(--radius-sm);"></div>
+        <div class="proj-text"><span class="c-num-label">01</span><span class="c-title-h">Team Research Project</span><p class="c-desc">Research methodologies | Stakeholders interview | Research Documentation and Presentation</p></div>
+      </div>
+      <a class="card-link" href="https://drive.google.com/file/d/17wo1Z8KmKxfuazFzB-P8SjAQDlQJ69sp/view?usp=sharing" target="_blank" rel="noopener noreferrer" title="Open project" onclick="event.stopPropagation()"><svg viewBox="0 0 14 14"><line x1="2" y1="12" x2="12" y2="2"/><polyline points="5,2 12,2 12,9"/></svg></a>
+    </div>
+    <div class="project-card" data-url="https://drive.google.com/file/d/1951ecdPVkKccLOAVPtzTyhEdW3Dlm2AD/view?usp=sharing" data-num="02">
+      <span class="c-num-corner">02</span>
+      <div class="card-collapsed">
+        <span class="c-num-idle">02</span><span class="c-title-vertical">Urbanism Study Individual Research</span>
+      </div>
+      <div class="card-expanded">
+        <div class="proj-thumb"><img src="./main-img/Urbanplanningbkk.jpg" alt="Project 02" style="width: 100%; height: 100%; object-fit: cover; object-position: left; border-radius: var(--radius-sm);"></div>
+        <div class="proj-text"><span class="c-num-label">02</span><span class="c-title-h">Bangkok Planning Study</span><p class="c-desc">Urban studies Bangkok's urban planning development Bankground + Contexts + Current Practice</p></div>
+      </div>
+      <a class="card-link" href="https://drive.google.com/file/d/1951ecdPVkKccLOAVPtzTyhEdW3Dlm2AD/view?usp=sharing" target="_blank" rel="noopener noreferrer" title="Open project" onclick="event.stopPropagation()"><svg viewBox="0 0 14 14"><line x1="2" y1="12" x2="12" y2="2"/><polyline points="5,2 12,2 12,9"/></svg></a>
+    </div>
+    <div class="project-card" data-url="https://drive.google.com/file/d/1rm1Gio-_8o7bLj_0YoR1M3jAmt2fCRld/view?usp=sharing" data-num="03">
+      <span class="c-num-corner">03</span>
+      <div class="card-collapsed">
+        <span class="c-num-idle">03</span><span class="c-title-vertical">Field Immersion</span>
+      </div>
+      <div class="card-expanded">
+        <div class="proj-thumb"><img src="./main-img/Fieldimersion.png" alt="Project 03" style="width: 100%; height: 100%; object-fit: cover; border-radius: var(--radius-sm);"></div>
+        <div class="proj-text"><span class="c-num-label">03</span><span class="c-title-h">Community Engagement in Chainat province</span><p class="c-desc">Immersive observations and community assimilation. Cross ultural communication. Local understanding</p></div>
+      </div>
+      <a class="card-link" href="https://drive.google.com/file/d/1rm1Gio-_8o7bLj_0YoR1M3jAmt2fCRld/view?usp=sharing" target="_blank" rel="noopener noreferrer" title="Open project" onclick="event.stopPropagation()"><svg viewBox="0 0 14 14"><line x1="2" y1="12" x2="12" y2="2"/><polyline points="5,2 12,2 12,9"/></svg></a>
+    </div>
+    <div class="project-card" data-url="https://drive.google.com/file/d/1JH3sfI6TS0zpA7cwQabO0xFSmXri9ALg/view?usp=sharing" data-num="04">
+      <span class="c-num-corner">04</span>
+      <div class="card-collapsed">
+        <span class="c-num-idle">04</span><span class="c-title-vertical">Firm Finance Analysis</span>
+      </div>
+      <div class="card-expanded">
+        <div class="proj-thumb"><img src="./main-img/FinanceAnalysis.png" alt="Project 04" style="width: 100%; height: 100%; object-fit: cover; border-radius: var(--radius-sm);"></div>
+        <div class="proj-text"><span class="c-num-label">04</span><span class="c-title-h">Financial Statement Analysis</span><p class="c-desc">Company financial assessment by analysing with financial ratios</p></div>
+      </div>
+      <a class="card-link" href="https://drive.google.com/file/d/1JH3sfI6TS0zpA7cwQabO0xFSmXri9ALg/view?usp=sharing" target="_blank" rel="noopener noreferrer" title="Open project" onclick="event.stopPropagation()"><svg viewBox="0 0 14 14"><line x1="2" y1="12" x2="12" y2="2"/><polyline points="5,2 12,2 12,9"/></svg></a>
+    </div>
+  </div>
+</section>
+
+<!-- mainpage-extracurricular -->
+<section class="extra-section scroll-reveal">
+  <div class="section-label">Beyond Class</div>
+  <h2 class="section-title">Extra Curricular Activities</h2>
+  <div class="extra-layout">
+    <div class="clubs-wrap">
+      <h3>Student Clubs Experiences</h3>
+      <div class="clubs-grid">
+        <a href="https://www.instagram.com/gsse.networkclub/?hl=en" target="_blank" rel="noopener noreferrer" class="club-circle" data-club="GVCN" data-tt-img="../main-img/GVCN-bg.jpg" data-tt-cat="Student Club" data-tt-title="GVCN" data-tt-desc="Club Treasurer — budget proposal and reimbursement" style="text-decoration: none;">
+          <img src="../main-img/GVCN logo.jpg" alt="GVCN Logo" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">
+          <div class="club-hover"><div class="placeholder-label"></div><p>Click to view club profile</p></div>
+        </a>
+        <a href="https://www.instagram.com/gsse_studentcouncil/?hl=en" target="_blank" rel="noopener noreferrer" class="club-circle" data-club="STUCO" data-tt-img="../main-img/stuco.jpg" data-tt-cat="Student Club" data-tt-title="STUCO" data-tt-desc="Club Welfare / Event Photographer" style="text-decoration: none;">
+          <img src="../main-img/Stuco-logo.jpg" alt="STUCO Logo" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">
+          <div class="club-hover"><div class="placeholder-label"></div><p>Click to view club profile</p></div>
+        </a>
+        <a href="https://www.instagram.com/anurak.tu/?hl=en" target="_blank" rel="noopener noreferrer" class="club-circle" data-club="Anurak" data-tt-img="../main-img/anurak-bg.jpg" data-tt-cat="Student Club" data-tt-title="Anurak" data-tt-desc="Club coordinator / logistics — Camp in Chiang Rai &amp; Seminar" style="text-decoration: none;">
+          <img src="../main-img/Aunarak logo.jfif" alt="Anurak Logo" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">
+          <div class="club-hover"><div class="placeholder-label"></div><p>Click to view club profile</p></div>
+        </a>
+      </div>
+    </div>
+    <div class="timeline-wrap">
+      <h3>Other Activities</h3>
+      <a target="_blank" rel="noopener noreferrer" class="timeline-item" style="text-decoration: none; color: inherit;" data-tt-img="../main-img/rice-research.jpg" data-tt-cat="Research" data-tt-title="Graduate Research Fellow / Field Researcher" data-tt-desc="Rice production in SEA — field research and data collection across 100+ farmers in Northeast Thailand" data-tt-date="July 2025">
+        <div class="timeline-dot research"></div>
+        <div class="timeline-content">
+          <div class="timeline-meta"><span class="tl-category">Research</span><span class="tl-date">July 2025</span></div>
+          <h4>Graduate Research Fellow / Field Researcher data collocter</h4><p>Rice production in SEA</p>
+        </div>
+      </a>
+      <a href="https://drive.google.com/file/d/1n8sclPp9ZuyZflaEh9VYsW8LagnaW6Pd/view?usp=sharing" target="_blank" rel="noopener noreferrer" class="timeline-item" style="text-decoration: none; color: inherit;" data-tt-img="../main-img/ADB.jpg" data-tt-cat="Youth Development" data-tt-title="Asian Development Bank / Youth Capacity Workshop" data-tt-desc="Youth Capacity Workshop hosted by the Asian Development Bank. 'Developing Youth Solutions for Urban Climate Resilience'" data-tt-date="Mar 2024" data-tt-icon="🏛️">
+        <div class="timeline-dot youth"></div>
+        <div class="timeline-content">
+          <div class="timeline-meta"><span class="tl-category">Youth Development Program</span><span class="tl-date">Mar 2025</span></div>
+          <h4>Asian Development Bank / Youth Capacity Workshop</h4><p>Urban Oasis Green Bus Stop</p>
+        </div>
+      </a>
+      <a href="https://drive.google.com/file/d/1HP-1unAwk56AoJNEh8_Gd6kQZBy0L-KI/view?usp=sharing" target="_blank" rel="noopener noreferrer" class="timeline-item" style="text-decoration: none; color: inherit;" data-tt-img="../main-img/seed.jpg" data-tt-cat="Youth Development" data-tt-title="Seed Thailand Year Four" data-tt-desc="Intensive Youth Development Programme focusing on local impact." data-tt-date="Mar 2024" data-tt-icon="🌱">
+        <div class="timeline-dot youth"></div>
+        <div class="timeline-content">
+          <div class="timeline-meta"><span class="tl-category">Youth Development Program</span><span class="tl-date">Jul 2024</span></div>
+          <h4>Seed Thailand Year Four</h4><p>Team project Koh Kret trip with different universities joining</p>
+        </div>
+      </a>
+      <a href="https://drive.google.com/file/d/18gJMm4mQ7KinRDf-E9pP9r-HFlZJRIOK/view?usp=sharing" target="_blank" rel="noopener noreferrer" class="timeline-item" style="text-decoration: none; color: inherit;" data-tt-vid="../main-img/TM Tonkoon.mp4" data-tt-img="" data-tt-cat="Public Speaking" data-tt-title="Toastmaster Club" data-tt-desc="International Speech Contest 2024 on stage — 'Self-doubt'." data-tt-date="19 May 2024" data-tt-icon="🎤">
+        <div class="timeline-dot speaking"></div>
+        <div class="timeline-content">
+          <div class="timeline-meta"><span class="tl-category">English Public Speaking</span><span class="tl-date">19 May 2024</span></div>
+          <h4>Toastmaster Club</h4><p>International Speech Contest 2024</p>
+        </div>
+      </a>
+      <a target="_blank" rel="noopener noreferrer" class="timeline-item" style="text-decoration: none; color: inherit;" data-tt-img="../main-img/volunteer.jpg" data-tt-cat="Volunteer" data-tt-title="Sleeping Bag Teacher Foundation" data-tt-desc="One-week English teacher camp at a rural school in Sukhothai province." data-tt-date="Nov 2022" data-tt-icon="📚">
+        <div class="timeline-dot volunteer"></div>
+        <div class="timeline-content">
+          <div class="timeline-meta"><span class="tl-category">Volunteer</span><span class="tl-date">Nov 2022</span></div>
+          <h4>Sleeping Bag Teacher Foundation</h4><p>English teacher volunteer school in Sukhothai</p>
+        </div>
+      </a>
+    </div>
+  </div>
+</section>
+
+</div><!-- END #page-main -->
+
+<!-- ============================================================
+  PAGE: SKILLS (id="page-skills")
+  Sections: skillpage-hero · skillpage-process ·
+            skillpage-whaticando · skillpage-softskills
+============================================================ -->
+<div id="page-skills" class="spa-page">
+
+<!-- skillpage-hero -->
+<section class="page-hero skills-hero scroll-reveal">
+  <div class="section-label"></div>
+  <h1 class="page-title">My <span class="name-accent">Problem Solving</span> Process <span class="name-accent">&amp;</span> Capabilites</h1>
+  <p class="page-subtitle">Skills built at Global Studies, Thammasat — through design thinking</p>
+</section>
+
+<!-- skillpage-process -->
+<section class="process-section scroll-reveal">
+  <div class="process-flow">
+    <div class="process-step" style="--i:0" data-bg-img="../skill-img/research-phrase.jpg">
+      <div class="step-bg"></div><div class="step-overlay"></div>
+      <div class="step-content">
+        <div class="step-num">1</div>
+        <h4>Empathize &amp; Define</h4><p class="step-sub">Research Phase</p>
+        <ul><li>Primary &amp; Secondary Research</li><li>Stakeholder Engagement</li><li>Problem identification</li></ul>
+      </div>
+      <div class="step-tooltip"></div>
+    </div>
+    <div class="process-step" style="--i:1" data-bg-img="../skill-img/ideation-phrase.jpg">
+      <div class="step-bg"></div><div class="step-overlay"></div>
+      <div class="step-content">
+        <div class="step-num">2</div>
+        <h4>Ideate</h4><p class="step-sub">Creativity Phase</p>
+        <ul><li>Ideations</li><li>Brainstroming</li><li>Connecting the dots</li></ul>
+      </div>
+      <div class="step-tooltip"></div>
+    </div>
+    <div class="process-step" style="--i:2" data-bg-img="../skill-img/me-singha-bizcourse.jpg">
+      <div class="step-bg"></div><div class="step-overlay"></div>
+      <div class="step-content">
+        <div class="step-num">3</div>
+        <h4>Prototype</h4><p class="step-sub">Decesion-making Phrase</p>
+        <ul><li>Prioritize</li><li>Visual Presentation</li><li>Mockups</li></ul>
+      </div>
+      <div class="step-tooltip"></div>
+    </div>
+    <div class="process-step" style="--i:3" data-bg-img="../skill-img/me-present.jpg">
+      <div class="step-bg"></div><div class="step-overlay"></div>
+      <div class="step-content">
+        <div class="step-num">4</div>
+        <h4>Deliver</h4><p class="step-sub">Presentation phrase</p>
+        <ul><li>Understand Audience</li><li>Presentation Skills (English)</li><li>Feedback loop</li></ul>
+      </div>
+      <div class="step-tooltip"></div>
+    </div>
+  </div>
+</section>
+
+<!-- skillpage-whaticando -->
+<section class="skills-what scroll-reveal">
+  <div class="section-label">Skill Areas</div>
+  <h2 class="section-title">What I Can Do</h2>
+  <div class="skills-cards">
+    <div class="skill-card-big">
+      <div class="skill-img-placeholder"><img src="../skill-img/play.jpg" alt="Research and Presentation"></div>
+      <h3>Research &amp; Presentation</h3>
+      <ul>
+        <li>Primary/Secondary research</li><li>Data analyses with critical thinking</li>
+        <li>Stakeholder coordinations</li><li>Document writing in English</li><li>Presentation skill in English</li>
+      </ul>
+    </div>
+    <div class="skill-card-big">
+      <div class="skill-img-placeholder"><img src="../skill-img/play.jpg" alt="Business Understanding"></div>
+      <h3>Business Understanding</h3>
+      <ul>
+        <li>Business modeling</li><li>Business pitching</li>
+        <li>Financial Report analyses</li><li>Internal and External Analyses</li><li>Sustainable development principles</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- skillpage-softskills -->
+<section class="soft-skills-section scroll-reveal">
+  <div class="section-label"></div>
+  <h2 class="section-title">Soft Skills</h2>
+  <div class="soft-grid">
+    <div class="soft-card">
+      <div class="soft-icon"><img src="../skill-img/timemng.png" alt="Icon"></div>
+      <h4>Time Management</h4><p>Prioritize tasks and always mange myself to be on time</p>
+    </div>
+    <div class="soft-card">
+      <div class="soft-icon"><img src="../skill-img/adaptability.jpg" alt="Icon"></div>
+      <h4>Adaptability</h4><p>Operational Flexibility. Being open to new idea, easily shift when circumstance changes</p>
+    </div>
+    <div class="soft-card">
+      <div class="soft-icon"><img src="../skill-img/emotional.jpg" alt="Icon"></div>
+      <h4>Emotional Intelligence</h4><p>Understanding my own and others&rsquo; emotions during situations.</p>
+    </div>
+    <div class="soft-card">
+      <div class="soft-icon"><img src="../skill-img/teamwork.jpg" alt="Icon"></div>
+      <h4>Team Working</h4><p>Everyone has unique strengths from different backgrounds, collaboration for shared goals</p>
+    </div>
+    <div class="soft-card">
+      <div class="soft-icon"><img src="../skill-img/self-leadership.png" alt="Icon"></div>
+      <h4>Self-leadership</h4><p>Control my own thinking, feelings, and actions to achieve objectives</p>
+    </div>
+  </div>
+</section>
+
+</div><!-- END #page-skills -->
+
+<!-- ============================================================
+  PAGE: HOBBY (id="page-hobby")
+  Sections: hobbypage-hero · hobbypage-activities · hobbypage-quote
+============================================================ -->
+<div id="page-hobby" class="spa-page">
+
+<!-- hobbypage-hero -->
+<section class="hobby-hero scroll-reveal">
+  <div class="hobby-hero-bg">
+    <img src="../hobby-img/DSC_1521.JPG" alt="Three Whales Rock" class="hobby-bg-img">
+    <div class="hobby-overlay"></div>
+  </div>
+  <div class="hobby-hero-text">
+    <h1>I am a Sport<br><span class="name-accent">Enthusiast.</span><br>Also love to travel !</h1>
+  </div>
+  <p class="hobby-caption">Taken by Nikon D90 | Three Whales Rock | Buengkarn</p>
+</section>
+
+<!-- hobbypage-activities -->
+<section class="hobby-activities scroll-reveal">
+  <div class="section-label">Free Time</div>
+  <h2 class="section-title">During my free time<br>things I love to do&hellip;</h2>
+  <div class="hobby-grid">
+    <div class="hobby-card running">
+      <div class="hobby-card-img"><img src="../hobby-img/run-bg.jpg" alt="Running"></div>
+      <div class="hobby-card-info">
+        <h4>Running</h4><ul><li>Bangkok Half Marathon: <strong>2 hrs 17 min</strong></li><li>Nakorn Nayok Full Marathon: <strong>4 hrs 40 min</strong></li></ul>
+      </div>
+    </div>
+    <div class="hobby-card cycling">
+      <div class="hobby-card-img"><img src="../hobby-img/biking-bg.jpg" alt="Cycling"></div>
+      <div class="hobby-card-info"><h4>Cycling</h4><p>Love road biking</p></div>
+    </div>
+    <div class="hobby-card travel">
+      <div class="hobby-card-img"><img src="../hobby-img/DSC_0542.JPG" alt="Travel and Photography"></div>
+      <div class="hobby-card-info"><h4>Traveling</h4><p>Love nature traveling and trying local food</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- hobbypage-quote -->
+<section class="quote-section scroll-reveal">
+  <div class="quote-layout">
+    <div class="quote-img-wrap"><img src="../hobby-img/runtrack.jpg" alt="Track Photo"></div>
+    <blockquote class="hero-quote">
+      <p>&ldquo;Sports teaches me with self-discipline, consisteny, and fighting spirit&rdquo;</p>
+      <cite>&mdash; Ratchaphruek Srisuphachoke</cite>
+    </blockquote>
+  </div>
+</section>
+
+</div><!-- END #page-hobby -->
+
+<!-- ============================================================
+  PAGE: CONTACT (id="page-contact")
+  Sections: contactpage-hero
+============================================================ -->
+<div id="page-contact" class="spa-page">
+
+<!-- contactpage -->
+<div class="contact-hero scroll-reveal">
+  <div class="section-label">Let&rsquo;s Talk</div>
+  <h1 class="page-title">Feel Free to<br><span class="name-accent">Contact Me</span></h1>
+</div>
+
+</div><!-- END #page-contact -->
+
+<!-- ============================================================
+  shared-footer
+============================================================ -->
+<footer class="page-footer">
+  <div class="resume-shake-wrap">
+    <button href="https://drive.google.com/file/d/14B0gE6rF0F6Nq75VHP7n7S0HZJKY5UGQ/view?usp=drive_link" class="btn-resume shake-btn">View my Resume</button>
+  </div>
+  <div class="footer-contact">
+    <p>Tel: 061 540 6041</p>
+    <p>Line ID: tonkooonkub12</p>
+    <p>WhatsApp: +66 61 540 6041</p>
+  </div>
+  <div class="footer-social">
+    <a href="https://www.facebook.com/ratchaphruk.srisuphachoke?locale=th_TH" class="social-icon" aria-label="Facebook">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
+    </a>
+    <a href="https://www.instagram.com/rrathchappuk/?hl=en" class="social-icon" aria-label="Instagram">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+    </a>
+    <a href="https://www.linkedin.com/in/ratchaphruek-srisuphachoke-5a8537277/" class="social-icon" aria-label="LinkedIn">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
+    </a>
+  </div>
+</footer>
+
+<!-- ============================================================
+  Scripts — loaded at bottom of body for performance.
+  Must come after all HTML so DOM elements exist when the
+  accordion and tooltip querySelectorAll calls run.
+============================================================ -->
+<script src="scripts.js"></script>
+
+</body>
+</html>
